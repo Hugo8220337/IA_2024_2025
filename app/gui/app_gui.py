@@ -3,9 +3,9 @@ from tkinter import ttk
 import cv2
 import numpy as np
 from PIL import Image, ImageTk
+from gui.menu_bar import MenuBar
 from utils import image_utils
 from utils.config import Config
-from gui.menu_bar import MenuBar
 import pyautogui
 from ultralytics import YOLO
 
