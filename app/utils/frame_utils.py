@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import pyautogui
+from utils.contants import CONFIG_SCREENSHOT_DEFAULT_PATH
 from utils import image_utils
 
 def capture_screenshot():
@@ -28,6 +29,7 @@ def process_frame(screenshot_cv, yolo_model=None):
 
 def save_frame(frame, config):
     """Guarda o frame se a opção estiver ativada na configuração."""
-    if config.get("save_screenshots", True):
-        save_path = config.get("screenshot_path", "C:\\Windows\\Temp\\screenshots")
+    is_screenshots_active = config.get("save_screenshots", True)
+    if is_screenshots_active:
+        save_path = config.get("screenshot_path", CONFIG_SCREENSHOT_DEFAULT_PATH)
         image_utils.save_screenshot(frame, save_path)

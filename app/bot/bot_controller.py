@@ -1,13 +1,14 @@
-import cv2
 from ultralytics import YOLO
+from utils.contants import CONFIG_INSTANCE, CONFIG_SCREENSHOT_DEFAULT_DELAY
 from utils.config import Config
-from utils.frame_utils import capture_screenshot, process_frame, save_frame
+
+import utils.frame_utils as frame_utils
 
 class BotController:
     def __init__(self, gui):
         self.gui = gui
         
-        self.config = Config.get_instance("config.json")
+        self.config = Config.get_instance(CONFIG_INSTANCE)
         self.running = False
         self.yolo_model = None
 
@@ -21,11 +22,18 @@ class BotController:
         if not self.running:
             return
 
-        screenshot_delay = self.config.get("screenshot_delay", 4000)
-        screenshot_cv = capture_screenshot()
-        frame_to_show = process_frame(screenshot_cv, self.yolo_model)
+        screenshot_delay = self.config.get("screenshot_delay", CONFIG_SCREENSHOT_DEFAULT_DELAY)
+
+        screenshot_cv = frame_utils.capture_screenshot() 
+
+        # Process the screenshot with YOLO model if loaded
+        frame_to_show = frame_utils.process_frame(screenshot_cv, self.yolo_model)
         self.gui.update_image(frame_to_show)
-        save_frame(frame_to_show, self.config)
+
+        # Save the screenshot if the option is enabled
+        frame_utils.save_frame(frame_to_show, self.config)
+
+        # Schedule the next screenshot
         self.gui.root.after(screenshot_delay, self.update_loop)
 
     def load_model(self, file_path):

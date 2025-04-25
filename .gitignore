@@ -3,6 +3,7 @@
 
 .env
 config.json
+screenshots/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
