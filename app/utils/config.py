@@ -26,7 +26,11 @@ class Config:
                 self.settings = json.load(f)
         else:
             # File not found: create with default settings
-            self.settings = {"screenshot_delay": 4000}  # Update with additional default settings as needed.
+            self.settings = {
+                "screenshot_delay": 4000,
+                "save_screenshots": True,
+                "screenshot_path": "C:\\Windows\\Temp\\screenshots"  # A directory that always exists on Windows systems
+            }
             self.save()
 
     def get(self, key, default=None):

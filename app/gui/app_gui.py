@@ -3,6 +3,7 @@ from tkinter import ttk
 import cv2
 import numpy as np
 from PIL import Image, ImageTk
+from utils import image_utils
 from utils.config import Config
 from gui.menu_bar import MenuBar
 import pyautogui
@@ -51,6 +52,8 @@ class PokeMMOBotApp:
 
         # Capture a screenshot and convert it to OpenCV format (BGR)
         screenshot = pyautogui.screenshot()
+
+
         screenshot_cv = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
 
         # Start with the original screenshot as the frame to display
@@ -72,6 +75,11 @@ class PokeMMOBotApp:
 
         # Update the GUI with the new image
         self.update_image(frame_to_show)
+
+        # If saving screenshots is enabled, save the screenshot to the specified path.
+        if self.config.get("save_screenshots", True):
+            save_path = self.config.get("screenshot_path", "C:\\Windows\\Temp\\screenshots")
+            image_utils.save_screenshot(frame_to_show, save_path)
 
         # Schedule the next update
         self.root.after(screenshot_delay, self.update_loop)
