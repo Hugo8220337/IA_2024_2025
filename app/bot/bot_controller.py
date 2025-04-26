@@ -1,5 +1,5 @@
 from ultralytics import YOLO
-from utils.contants import CONFIG_INSTANCE, CONFIG_SCREENSHOT_DEFAULT_DELAY
+from utils.contants import CONFIG_SCREENSHOT_DEFAULT_DELAY
 from utils.config import Config
 
 import utils.frame_utils as frame_utils
@@ -43,7 +43,7 @@ class BotController:
         self.gui.update_image(frame_to_show)
 
         # Save the screenshot if the option is enabled
-        frame_utils.save_frame(frame_to_show, self.config)
+        frame_utils.save_frame(frame_to_show, self.configs)
 
         # Schedule the next screenshot
         self.gui.root.after(screenshot_delay, self.update_loop)

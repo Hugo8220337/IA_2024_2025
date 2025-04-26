@@ -29,11 +29,11 @@ def process_frame(screenshot_cv, yolo_model=None):
 
     return frame_to_show
 
-def save_frame(frame, config):
+def save_frame(frame, configs):
     """
     Saves the frame if the option is enabled in the configuration.
     """
-    is_screenshots_active = config.get("save_screenshots", True)
+    is_screenshots_active = configs.get("save_screenshots", True)
     if is_screenshots_active:
-        save_path = config.get("screenshot_path", CONFIG_SCREENSHOT_DEFAULT_PATH)
+        save_path = configs.get("screenshot_path", CONFIG_SCREENSHOT_DEFAULT_PATH)
         image_utils.save_screenshot(frame, save_path)
