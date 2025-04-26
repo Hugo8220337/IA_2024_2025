@@ -4,6 +4,14 @@ import cv2
 from PIL import Image
 
 def save_screenshot(screenshot, save_path: str) -> None:
+    """
+    Saves the screenshot to the specified path.
+    If the path does not exist, it creates the directory.
+    
+    Args:
+        screenshot: The screenshot to save. Can be a PIL Image or a numpy array (BGR format).
+        save_path: The directory where the screenshot will be saved.
+    """
     if not os.path.exists(save_path):
         os.makedirs(save_path, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

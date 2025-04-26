@@ -1,4 +1,4 @@
-CONFIG_INSTANCE = "config.json"
+CONFIG_INSTANCE = "config.json" # Configuration file path
 
 CONFIG_SCREENSHOT_DEFAULT_DELAY = 4000  # 4 seconds
 CONFIG_SCREENSHOT_DEFAULT_OPTION = True  # Default option to save screenshots

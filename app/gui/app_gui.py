@@ -3,16 +3,22 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 import cv2
 
+from bot.bot_controller import BotController
+
 class AppGUI:
-    def __init__(self, root, bot_controller):
+    def __init__(self, root: tk, bot_controller: BotController):
         self.root = root
         self.bot_controller = bot_controller
+
         self.root.title("PokeNoob - Bot for noobs")
         self.status_text = tk.StringVar(value="Inativo")
         self.model_status_text = tk.StringVar(value="Nenhum modelo carregado")
         self.setup_gui()
 
     def setup_gui(self):
+        """
+        Set up the GUI components. 
+        """
         frame = ttk.Frame(self.root, padding=10)
         frame.pack()
         ttk.Label(frame, textvariable=self.model_status_text, foreground="blue").pack(pady=5)
@@ -23,19 +29,31 @@ class AppGUI:
         ttk.Label(frame, textvariable=self.status_text).pack(pady=5)
 
     def toggle_bot(self):
+        """
+        Toggle the bot's running state and update the button text accordingly.
+        """
         self.bot_controller.toggle_bot()
         self.status_text.set("Ativo" if self.bot_controller.running else "Inativo")
         self.btn_toggle.config(text="Desativar" if self.bot_controller.running else "Ativar")
 
     def update_model_status(self, text):
+        """
+        Update the model status text in the GUI.
+        """
         self.model_status_text.set(text)
 
     def update_image(self, frame):
+        """
+        Update the displayed image in the GUI.
+        """
         rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         img_pil = Image.fromarray(rgb_image).resize((800, 480))
         img_tk = ImageTk.PhotoImage(img_pil)
-        self.label_img.imgtk = img_tk  # Previne a coleta de lixo.
+        self.label_img.imgtk = img_tk  # Prevents garbage collection.
         self.label_img.config(image=img_tk)
 
     def enable_toggle(self):
+        """
+        Enable the toggle button in the GUI.
+        """
         self.btn_toggle.config(state=tk.NORMAL)

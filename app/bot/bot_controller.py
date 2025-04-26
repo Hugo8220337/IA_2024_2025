@@ -5,24 +5,31 @@ from utils.config import Config
 import utils.frame_utils as frame_utils
 
 class BotController:
-    def __init__(self, gui):
+    def __init__(self, gui, configs: Config):
         self.gui = gui
-        
-        self.config = Config.get_instance(CONFIG_INSTANCE)
+        self.configs = configs
+
         self.running = False
         self.yolo_model = None
 
     def toggle_bot(self):
+        """
+        Toggle the bot's running state.
+        """
         self.running = not self.running
         print("Bot iniciado!" if self.running else "Bot parado!")
         if self.running:
             self.update_loop()
 
     def update_loop(self):
+        """
+        Main loop for the bot. It captures a screenshot, processes it with the YOLO model,
+        and updates the GUI with the processed image.
+        """
         if not self.running:
             return
 
-        screenshot_delay = self.config.get("screenshot_delay", CONFIG_SCREENSHOT_DEFAULT_DELAY)
+        screenshot_delay = self.configs.get("screenshot_delay", CONFIG_SCREENSHOT_DEFAULT_DELAY)
 
         screenshot_cv = frame_utils.capture_screenshot() 
 
@@ -37,6 +44,9 @@ class BotController:
         self.gui.root.after(screenshot_delay, self.update_loop)
 
     def load_model(self, file_path):
+        """
+        Load the YOLO model from the specified file path.
+        """
         self.yolo_model = YOLO(file_path)
         self.gui.update_model_status(f"Modelo carregado: {file_path}")
         print(f"Modelo carregado: {file_path}")

@@ -5,13 +5,15 @@ from utils.contants import CONFIG_SCREENSHOT_DEFAULT_PATH
 from utils import image_utils
 
 def capture_screenshot():
-    """Captura o ecrã e converte a imagem para o formato BGR do OpenCV."""
+    """
+    Captures the screen and converts the image to OpenCV's BGR format.
+    """
     screenshot = pyautogui.screenshot()
     return cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
 
 def process_frame(screenshot_cv, yolo_model=None):
-    """Realiza a detecção de objetos (caso o modelo esteja carregado)
-    e retorna o frame resultante para exibição."""
+    """Performs object detection (if the model is loaded)
+    and returns the resulting frame for display."""
     frame_to_show = screenshot_cv.copy()
 
     if yolo_model:
@@ -28,7 +30,9 @@ def process_frame(screenshot_cv, yolo_model=None):
     return frame_to_show
 
 def save_frame(frame, config):
-    """Guarda o frame se a opção estiver ativada na configuração."""
+    """
+    Saves the frame if the option is enabled in the configuration.
+    """
     is_screenshots_active = config.get("save_screenshots", True)
     if is_screenshots_active:
         save_path = config.get("screenshot_path", CONFIG_SCREENSHOT_DEFAULT_PATH)
