@@ -12,14 +12,19 @@ class BotController:
         self.running = False
         self.yolo_model = None
 
-    def toggle_bot(self):
+
+    def start_bot(self):
         """
-        Toggle the bot's running state.
+        Start the bot by capturing a screenshot and processing it with the YOLO model.
         """
-        self.running = not self.running
-        print("Bot iniciado!" if self.running else "Bot parado!")
-        if self.running:
-            self.update_loop()
+        self.running = True
+        self.update_loop()
+    
+    def stop_bot(self):
+        """
+        Stop the bot by setting the running state to False.
+        """
+        self.running = False
 
     def update_loop(self):
         """
@@ -47,7 +52,10 @@ class BotController:
         """
         Load the YOLO model from the specified file path.
         """
+
+        # Load the YOLO model
         self.yolo_model = YOLO(file_path)
+
+        # Update the GUI with the loaded model status
         self.gui.update_model_status(f"Modelo carregado: {file_path}")
-        print(f"Modelo carregado: {file_path}")
-        self.gui.enable_toggle()
+        self.gui.enable_toggle() 

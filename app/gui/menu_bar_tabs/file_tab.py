@@ -25,5 +25,6 @@ class FileTab:
             title="Selecionar Modelo YOLO",
             filetypes=[("Model Files", "*.pt"), ("All Files", "*.*")]
         )
+
         if file_path:
             self.bot_controller.load_model(file_path)

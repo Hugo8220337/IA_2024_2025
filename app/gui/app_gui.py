@@ -7,10 +7,10 @@ from bot.bot_controller import BotController
 
 class AppGUI:
     def __init__(self, root: tk, bot_controller: BotController):
-        self.root = root
-        self.bot_controller = bot_controller
+        self._root = root
+        self._bot_controller = bot_controller
 
-        self.root.title("PokeNoob - Bot for noobs")
+        self._root.title("PokeNoob - Bot for noobs")
         self.status_text = tk.StringVar(value="Inativo")
         self.model_status_text = tk.StringVar(value="Nenhum modelo carregado")
         self.setup_gui()
@@ -19,11 +19,15 @@ class AppGUI:
         """
         Set up the GUI components. 
         """
-        frame = ttk.Frame(self.root, padding=10)
+        frame = ttk.Frame(self._root, padding=10)
         frame.pack()
+
+        # Create a label for the title
         ttk.Label(frame, textvariable=self.model_status_text, foreground="blue").pack(pady=5)
         self.label_img = ttk.Label(frame)
         self.label_img.pack(pady=10)
+
+        # Create a button to load the model
         self.btn_toggle = ttk.Button(frame, text="Ativar", command=self.toggle_bot, state=tk.DISABLED)
         self.btn_toggle.pack()
         ttk.Label(frame, textvariable=self.status_text).pack(pady=5)
@@ -32,9 +36,14 @@ class AppGUI:
         """
         Toggle the bot's running state and update the button text accordingly.
         """
-        self.bot_controller.toggle_bot()
-        self.status_text.set("Ativo" if self.bot_controller.running else "Inativo")
-        self.btn_toggle.config(text="Desativar" if self.bot_controller.running else "Ativar")
+        if self._bot_controller.running:
+            self._bot_controller.stop_bot()
+            self.status_text.set("Inativo")
+            self.btn_toggle.config(text="Ativar")
+        else:
+            self._bot_controller.start_bot()
+            self.status_text.set("Ativo")
+            self.btn_toggle.config(text="Desativar")
 
     def update_model_status(self, text):
         """
