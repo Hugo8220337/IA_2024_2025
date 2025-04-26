@@ -66,3 +66,9 @@ class AppGUI:
         Enable the toggle button in the GUI.
         """
         self.btn_toggle.config(state=tk.NORMAL)
+    
+    def get_root(self):
+        """
+        Get the root window of the GUI.
+        """
+        return self._root

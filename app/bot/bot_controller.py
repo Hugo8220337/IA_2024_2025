@@ -46,7 +46,7 @@ class BotController:
         frame_utils.save_frame(frame_to_show, self.configs)
 
         # Schedule the next screenshot
-        self.gui.root.after(screenshot_delay, self.update_loop)
+        self.gui.get_root().after(screenshot_delay, self.update_loop)
 
     def load_model(self, file_path):
         """
