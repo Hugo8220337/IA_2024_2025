@@ -1,5 +1,4 @@
-tkinter
-numpy
 opencv-python
 mss
 ultralytics
+pyautogui
