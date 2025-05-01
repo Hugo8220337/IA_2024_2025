@@ -60,7 +60,7 @@ class BotController:
         frame_utils.save_frame(frame_to_show, self.configs)
 
         # Process the detections through the action pipeline
-        self.action_pipeline.process(detections)
+        self.action_pipeline.process(detections, screenshot_cv)
             
         # Schedule the next iteration of the loop after the specified delay
         self.gui.get_root().after(screenshot_delay, self.update_loop)

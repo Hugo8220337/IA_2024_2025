@@ -15,7 +15,7 @@ class PokemonSelectionDetectionHandler(ActionHandler):
         )
         return positives >= 1
     
-    def handle(self, detections: List[Detection]) -> None:
+    def handle(self, detections: List[Detection], image) -> None:
         if not self._is_choosing_pokemon(detections):
             return
         

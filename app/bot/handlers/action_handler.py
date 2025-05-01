@@ -7,7 +7,8 @@ This class defines the interface for handling actions based on the detections
 detected by the YOLO model.
 """
 class ActionHandler:
-    def handle(self, detections: List[Detection]) -> None:
+
+    def handle(self, detections: List[Detection], image) -> None:
         """
         Process the list of detections.
         """

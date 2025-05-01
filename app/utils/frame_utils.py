@@ -17,7 +17,8 @@ def capture_screenshot():
 
 @dataclass
 class Detection:
-    coordinates: np.ndarray
+    coordinates: np.ndarray # [x_min, y_min, x_max, y_max]
+    image_size: tuple[int, int] # (width, height)
     confidence: float
     name: str
 
@@ -58,7 +59,12 @@ def process_frame(screenshot_cv, yolo_model=None) -> tuple[any, list]:
                 for box, conf, cls in zip(boxes, confidences, classes):
                     name = class_names.get(cls, "Unknown")  # Get the class name using the index
                     # Create a Detection dataclass instance to store all details
-                    detection = Detection(coordinates=box, confidence=conf, name=name)
+                    detection = Detection(
+                        coordinates=box,
+                        image_size=screenshot_cv.shape[:2],  # (height, width)
+                        confidence=conf,
+                        name=name
+                    )
                     detections.append(detection)
                 
                 # Generate a visual representation of the detections on the frame

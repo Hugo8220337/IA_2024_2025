@@ -9,7 +9,7 @@ class ActionPipeline:
     def add_handler(self, handler: ActionHandler) -> None:
         self.handlers.append(handler)
     
-    def process(self, detections: List[Detection]) -> None:
+    def process(self, detections: List[Detection], image) -> None:
         # Each handler processes the detections
         for handler in self.handlers:
-            handler.handle(detections)
+            handler.handle(detections, image)
