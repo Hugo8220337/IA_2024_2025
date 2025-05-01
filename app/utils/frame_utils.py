@@ -3,6 +3,8 @@ import numpy as np
 import pyautogui
 from utils.contants import CONFIG_SCREENSHOT_DEFAULT_PATH
 from utils import image_utils
+from dataclasses import dataclass
+
 
 def capture_screenshot():
     """
@@ -11,23 +13,59 @@ def capture_screenshot():
     screenshot = pyautogui.screenshot()
     return cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
 
-def process_frame(screenshot_cv, yolo_model=None):
-    """Performs object detection (if the model is loaded)
-    and returns the resulting frame for display."""
-    frame_to_show = screenshot_cv.copy()
 
+
+@dataclass
+class Detection:
+    coordinates: np.ndarray
+    confidence: float
+    name: str
+
+def process_frame(screenshot_cv, yolo_model=None) -> tuple[any, list]:
+    """
+    Processes the screenshot frame with the YOLO model (if provided) and returns:
+      - a modified frame (with overlaid detections, if any)
+      - a list of detection objects containing coordinates, confidence and name
+
+    :param screenshot_cv: The screenshot image in OpenCV BGR format.
+    :param yolo_model: YOLO model instance for processing the image.
+    :return: Tuple containing the processed image and a list of detections.
+    """
+    # Create a copy of the original screenshot to draw on
+    frame_to_show = screenshot_cv.copy()
+    # List to accumulate detection results
+    detections = []
+
+    # Process the frame if a valid YOLO model is provided
     if yolo_model:
+        # Run the YOLO model on the screenshot
         results = yolo_model(screenshot_cv)
 
+        # Check if there are results from the model
         if results and len(results) > 0:
-            boxes = results[0].boxes.xyxy.cpu().numpy() if results[0].boxes.xyxy is not None else np.array([])
-            if boxes.size > 0:
-                print(f"Detected {len(boxes)} objects:")
-                for i, box in enumerate(boxes):
-                    print(f"  -- Object {i+1}: {box}")
-            frame_to_show = results[0].plot()
+            # Get the first result in case of batch processing
+            r0 = results[0]
+            # Ensure the detection results (bounding boxes) exist
+            if r0.boxes.xyxy is not None:
+                # Retrieve bounding boxes, confidence scores, and class predictions
+                boxes = r0.boxes.xyxy.cpu().numpy()
+                confidences = r0.boxes.conf.cpu().numpy()
+                classes = r0.boxes.cls.cpu().numpy().astype(int)
+                # Obtain the mapping from class indices to names, default to {} if not available
+                class_names = yolo_model.names if hasattr(yolo_model, 'names') else {}
+                
+                # Iterate over each detection's components
+                for box, conf, cls in zip(boxes, confidences, classes):
+                    name = class_names.get(cls, "Unknown")  # Get the class name using the index
+                    # Create a Detection dataclass instance to store all details
+                    detection = Detection(coordinates=box, confidence=conf, name=name)
+                    detections.append(detection)
+                
+                # Generate a visual representation of the detections on the frame
+                frame_to_show = r0.plot()
 
-    return frame_to_show
+    # Return the processed frame and the list of detection details
+    return frame_to_show, detections
 
 def save_frame(frame, configs):
     """
