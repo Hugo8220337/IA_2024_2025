@@ -2,6 +2,7 @@ from typing import List
 
 import numpy
 from bot.handlers.action_handler import ActionHandler
+from utils.contants import ATTACK_TEXT_X1_OFFSET, ATTACK_TEXT_X2_OFFSET, ATTACK_TEXT_Y1_OFFSET, ATTACK_TEXT_Y2_OFFSET
 from utils.frame_utils import Detection
 from utils import ocr_utils
 
@@ -39,10 +40,10 @@ class AttackDetectionHandler(ActionHandler):
         if not detection.name.lower().startswith("attack"):
             return ""
 
-        x1 = int(detection.coordinates[0])
-        y1 = int(detection.coordinates[1])
-        x2 = int(detection.coordinates[2])
-        y2 = int(detection.coordinates[3] / 2)
+        x1 = int(detection.coordinates[0]) + ATTACK_TEXT_X1_OFFSET
+        y1 = int(detection.coordinates[1]) + ATTACK_TEXT_Y1_OFFSET
+        x2 = int(detection.coordinates[2]) - ATTACK_TEXT_X2_OFFSET
+        y2 = int(detection.coordinates[3]) - ATTACK_TEXT_Y2_OFFSET
 
         return ocr_utils.read_text_in_square(image, [x1, y1, x2, y2])
     
@@ -52,10 +53,12 @@ class AttackDetectionHandler(ActionHandler):
         
         print("Attack detected!")
 
-
+        # Iterate through the detections to find attack text
         for detection in detections:
             if detection.name.lower().startswith("attack"):
                 attack_text = self._get_attack_text(detection, image)
                 print(f"Attack text: {attack_text}")
+
+        # Logic to handle the attack detection
 
         
