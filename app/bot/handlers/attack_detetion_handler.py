@@ -54,9 +54,11 @@ class AttackDetectionHandler(ActionHandler):
         print("Attack detected!")
 
         # Iterate through the detections to find attack text
+        attacks = []
         for detection in detections:
             if detection.name.lower().startswith("attack"):
                 attack_text = self._get_attack_text(detection, image)
+                attacks.append(attack_text)
                 print(f"Attack text: {attack_text}")
 
         # Logic to handle the attack detection
