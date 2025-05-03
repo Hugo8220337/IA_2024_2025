@@ -1,3 +1,4 @@
+import numpy
 import pyautogui
 from typing import List
 from bot.handlers.action_handler import ActionHandler
@@ -30,7 +31,7 @@ class BattleDetectionHandler(ActionHandler):
         
         return battle_buttons
     
-    def handle(self, detections: List[Detection], image) -> None:
+    def handle(self, detections: List[Detection], image: numpy.ndarray) -> None:
         if not self._is_in_battle(detections):
             return
         

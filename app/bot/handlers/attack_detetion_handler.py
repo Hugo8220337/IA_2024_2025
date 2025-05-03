@@ -1,4 +1,6 @@
 from typing import List
+
+import numpy
 from bot.handlers.action_handler import ActionHandler
 from utils.frame_utils import Detection
 from utils import ocr_utils
@@ -29,7 +31,7 @@ class AttackDetectionHandler(ActionHandler):
         
         return positives >= 3 or (has_attack_prefix and has_type_prefix)
     
-    def _get_attack_text(self, detection: Detection, image) -> str:
+    def _get_attack_text(self, detection: Detection, image: numpy.ndarray) -> str:
         """
         Get the attack text from the detection.
         Returns the text if it starts with "attack", otherwise returns None.
@@ -37,10 +39,10 @@ class AttackDetectionHandler(ActionHandler):
         if not detection.name.lower().startswith("attack"):
             return ""
 
-        x1 = detection.coordinates[0]
-        x2 = detection.coordinates[2]
-        y1 = detection.coordinates[1] // 2
-        y2 = detection.coordinates[3] // 2
+        x1 = int(detection.coordinates[0])
+        y1 = int(detection.coordinates[1])
+        x2 = int(detection.coordinates[2])
+        y2 = int(detection.coordinates[3] / 2)
 
         return ocr_utils.read_text_in_square(image, [x1, y1, x2, y2])
     

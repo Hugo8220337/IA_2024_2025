@@ -1,3 +1,4 @@
+import numpy
 from typing import List
 from bot.handlers.action_handler import ActionHandler
 from utils.frame_utils import Detection
@@ -15,7 +16,7 @@ class PokemonSelectionDetectionHandler(ActionHandler):
         )
         return positives >= 1
     
-    def handle(self, detections: List[Detection], image) -> None:
+    def handle(self, detections: List[Detection], image: numpy.ndarray) -> None:
         if not self._is_choosing_pokemon(detections):
             return
         
