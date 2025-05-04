@@ -1,6 +1,6 @@
 import numpy
-import pyautogui
 from typing import List
+from utils import pyautogui_utils
 from bot.handlers.action_handler import ActionHandler
 from utils import image_utils
 from utils.frame_utils import Detection
@@ -47,5 +47,4 @@ class BattleDetectionHandler(ActionHandler):
         
         x, y = image_utils.calculate_middle(x_min, y_min, x_max, y_max)
 
-        pyautogui.moveTo(x, y, duration=0.3)
-        pyautogui.click(x, y)
+        pyautogui_utils.perform_click(x, y)
