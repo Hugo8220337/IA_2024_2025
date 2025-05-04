@@ -1,11 +1,12 @@
 import numpy
 from typing import List
-from utils import pyautogui_utils
 from bot.handlers.action_handler import ActionHandler
+from utils import pyautogui_utils
+from bot.handlers.BaseDetectionHandler import BaseDetectionHandler
 from utils import image_utils
 from utils.frame_utils import Detection
 
-class BattleDetectionHandler(ActionHandler):
+class BattleDetectionHandler(ActionHandler, BaseDetectionHandler):
     def _is_in_battle(self, detections: List[Detection]) -> bool:
         """
         Check if the detection indicates a battle.

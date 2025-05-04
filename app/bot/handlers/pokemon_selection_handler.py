@@ -1,11 +1,12 @@
 import numpy
 from typing import List
+from bot.handlers.BaseDetectionHandler import BaseDetectionHandler
 from bot.handlers.action_handler import ActionHandler
 from utils import ocr_utils
 from utils.contants import POKEMON_TEXT_X1_OFFSET, POKEMON_TEXT_X2_OFFSET, POKEMON_TEXT_Y1_OFFSET, POKEMON_TEXT_Y2_OFFSET
 from utils.frame_utils import Detection
 
-class PokemonSelectionDetectionHandler(ActionHandler):
+class PokemonSelectionDetectionHandler(ActionHandler, BaseDetectionHandler):
     def _is_choosing_pokemon(self, detections: List[Detection]) -> bool:
         """
         Check if the detection indicates a battle.

@@ -1,12 +1,13 @@
 from typing import List
 
 import numpy
+from bot.handlers.BaseDetectionHandler import BaseDetectionHandler
 from bot.handlers.action_handler import ActionHandler
 from utils.contants import ATTACK_TEXT_X1_OFFSET, ATTACK_TEXT_X2_OFFSET, ATTACK_TEXT_Y1_OFFSET, ATTACK_TEXT_Y2_OFFSET
 from utils.frame_utils import Detection
 from utils import ocr_utils
 
-class AttackDetectionHandler(ActionHandler):
+class AttackDetectionHandler(ActionHandler, BaseDetectionHandler):
     def _is_attacking(self, detections: List[Detection]) -> bool:
         """
         Check if the detection indicates an attack.
@@ -54,6 +55,10 @@ class AttackDetectionHandler(ActionHandler):
         print("Attack detected!")
 
         # Iterate through the detections to find attack text
+        my_level = self.get_my_level(detections, image)
+        enemy_level = self.get_enemy_level(detections, image)
+        enemy_name = self.get_enemy_name(detections)
+
         attacks = []
         for detection in detections:
             if detection.name.lower().startswith("attack"):
