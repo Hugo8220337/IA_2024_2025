@@ -1,4 +1,8 @@
 from ultralytics import YOLO
+from bot.handlers.pokemon_selection_handler import PokemonSelectionDetectionHandler
+from bot.action_pipeline import ActionPipeline
+from bot.handlers.attack_detetion_handler import AttackDetectionHandler
+from bot.handlers.batle_detection_handler import BattleDetectionHandler
 from utils.contants import CONFIG_SCREENSHOT_DEFAULT_DELAY
 from utils.config import Config
 
@@ -11,6 +15,12 @@ class BotController:
 
         self.running = False
         self.yolo_model = None
+
+        # Initialize the action pipeline
+        self.action_pipeline = ActionPipeline()
+        self.action_pipeline.add_handler(BattleDetectionHandler())
+        self.action_pipeline.add_handler(AttackDetectionHandler())
+        self.action_pipeline.add_handler(PokemonSelectionDetectionHandler())
 
 
     def start_bot(self):
@@ -34,18 +44,25 @@ class BotController:
         if not self.running:
             return
 
+        # Get the delay for taking screenshots from the configuration
         screenshot_delay = self.configs.get("screenshot_delay", CONFIG_SCREENSHOT_DEFAULT_DELAY)
-
-        screenshot_cv = frame_utils.capture_screenshot() 
-
-        # Process the screenshot with YOLO model if loaded
-        frame_to_show = frame_utils.process_frame(screenshot_cv, self.yolo_model)
+        
+        # Capture a screenshot of the current screen
+        screenshot_cv = frame_utils.capture_screenshot()
+        
+        # Process the screenshot using the YOLO model
+        frame_to_show, detections = frame_utils.process_frame(screenshot_cv, self.yolo_model)
+        
+        # Update the GUI with the processed image
         self.gui.update_image(frame_to_show)
-
-        # Save the screenshot if the option is enabled
+        
+        # Save the processed frame to a file
         frame_utils.save_frame(frame_to_show, self.configs)
 
-        # Schedule the next screenshot
+        # Process the detections through the action pipeline
+        self.action_pipeline.process(detections, screenshot_cv)
+            
+        # Schedule the next iteration of the loop after the specified delay
         self.gui.get_root().after(screenshot_delay, self.update_loop)
 
     def load_model(self, file_path):

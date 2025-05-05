@@ -24,3 +24,45 @@ def save_screenshot(screenshot, save_path: str) -> None:
         # Otherwise, assume it's a numpy array (BGR format) and convert it.
         screenshot_pil = Image.fromarray(cv2.cvtColor(screenshot, cv2.COLOR_BGR2RGB))
         screenshot_pil.save(file_path)
+
+
+def scale_coordinates(
+        x: float,
+        y: float,
+        img_width: float,
+        img_height: float,
+        screen_width: float,
+        screen_height: float
+) -> tuple[int, int]:
+    """
+    Scale the coordinates from the image size to the screen size.
+    
+    Args:
+        x: The x-coordinate to scale.
+        y: The y-coordinate to scale.
+        img_width: The width of the image.
+        img_height: The height of the image.
+        screen_width: The width of the screen.
+        screen_height: The height of the screen.
+        
+    Returns:
+        A tuple containing the scaled x and y coordinates.
+    """
+    x_scaled = int(x * (screen_width / img_width))
+    y_scaled = int(y * (screen_height / img_height))
+    return x_scaled, y_scaled
+
+def calculate_middle(x_min: int, y_min: int, x_max: int, y_max: int) -> tuple[int, int]:
+    """
+    Calculate the middle coordinates of a bounding box.
+    
+    Args:
+        x_min: Minimum x-coordinate of the bounding box.
+        y_min: Minimum y-coordinate of the bounding box.
+        x_max: Maximum x-coordinate of the bounding box.
+        y_max: Maximum y-coordinate of the bounding box.
+        
+    Returns:
+        A tuple containing the middle x and y coordinates.
+    """
+    return (x_min + x_max) // 2, (y_min + y_max) // 2
