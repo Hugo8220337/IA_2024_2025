@@ -57,14 +57,19 @@ class AttackDetectionHandler(ActionHandler, BaseDetectionHandler):
         # Iterate through the detections to find attack text
         my_level = self.get_my_level(detections, image)
         enemy_level = self.get_enemy_level(detections, image)
-        enemy_name = self.get_enemy_name(detections)
+        enemy_name = self.get_enemy_pokemon_name(detections)
+        my_name = self.get_my_pokemon_name(detections)
 
-        attacks = []
-        for detection in detections:
-            if detection.name.lower().startswith("attack"):
-                attack_text = self._get_attack_text(detection, image)
-                attacks.append(attack_text)
-                print(f"Attack text: {attack_text}")
+        print("My level:", my_level)
+        print("Enemy level:", enemy_level)
+        print("Enemy name:", enemy_name)
+        print("My name:", my_name)
+        # attacks = []
+        # for detection in detections:
+        #     if detection.name.lower().startswith("attack"):
+        #         attack_text = self._get_attack_text(detection, image)
+        #         attacks.append(attack_text)
+        #         print(f"Attack text: {attack_text}")
 
         # Logic to handle the attack detection
 

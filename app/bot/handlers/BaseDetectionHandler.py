@@ -45,10 +45,11 @@ class BaseDetectionHandler:
                 return text
         return ''
 
-    def get_enemy_name(self, detections: List[Detection]) -> str:
+    def get_enemy_pokemon_name(self, detections: List[Detection]) -> str:
         """
         Get the name of the enemy Pokemon from the detection.
         """
+        # Filter out detections that are not relevant to Pokemon names
         filtered_detections = [
             detection for detection in detections
             if not detection.name.lower().startswith("attack") and
@@ -60,11 +61,34 @@ class BaseDetectionHandler:
         if not filtered_detections:
             return None
 
-        # Find the detection with the highest y-coordinate that has a confidence > 0.7
-        highest_y_detection = max(
+        # Find the detection with the highest x-coordinate that has a confidence > 0.7
+        highest_x_detection = max(
             (d for d in filtered_detections if d.confidence > 0.7),
-            key=lambda d: d.coordinates[1]
+            key=lambda d: d.coordinates[0]
         )
 
-        return highest_y_detection.name
-        
+        return highest_x_detection.name
+    
+    def get_my_pokemon_name(self, detections: List[Detection]) -> str:
+        """
+        Get the name of the enemy Pokemon from the detection.
+        """
+        # Filter out detections that are not relevant to Pokemon names
+        filtered_detections = [
+            detection for detection in detections
+            if not detection.name.lower().startswith("attack") and
+               not detection.name.lower().startswith("type") and
+               not detection.name.lower().endswith("level") and
+               not detection.name.lower().endswith("button")
+        ]
+
+        if not filtered_detections:
+            return None
+
+        # Find the detection with the lowest x-coordinate that has a confidence > 0.7
+        lowest_x_detection = min(
+            (d for d in filtered_detections if d.confidence > 0.7),
+            key=lambda d: d.coordinates[0]
+        )
+
+        return lowest_x_detection.name
