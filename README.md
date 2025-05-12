@@ -1,74 +1,72 @@
 # IA_2024_2025
+This repository contains scripts and applications for training and inference using YOLO models, as well as a bot with a graphical interface for automation and real-time interaction.
 
-Este repositório contém scripts e aplicações destinados ao treino e à inferência utilizando modelos YOLO, bem como um bot com interface gráfica para automatização e interação em tempo real.
+## Contents
 
-## Conteúdo
+- **Training Notebooks**  
+  - `pokemon_dataset_training.ipynb`: Notebook for downloading the dataset, training, and evaluating the YOLO model for Pokémon detection.  
+  - `attack_effectiveness_training.ipynb`: Notebook for training a classification model (Random Forest) that predicts attack effectiveness based on the data in the CSV file `datasets/attack_attempts.csv`.
 
-- **Notebooks de Treino**  
-  - `pokemon_dataset_training.ipynb`: Notebook para efectuar o download do conjunto de dados, realizar o treino e avaliar o modelo YOLO para deteção de Pokémons.  
-  - `attack_effectiveness_training.ipynb`: Notebook para o treino de um modelo de classificação (Random Forest) que prevê a eficácia dos ataques com base nos dados do ficheiro CSV `datasets/attack_attempts.csv`.
+- **Bot and GUI Application**  
+  - The main application is located in `app/main.py`.  
+  - The bot uses an action pipeline with handlers to detect battles, attacks, and Pokémon selection from screenshots.  
+  - The graphical interface (Tkinter) is defined in `app/gui/app_gui.py`, and the menu bar is in `app/gui/menu_bar.py`.
 
-- **Aplicação Bot e GUI**  
-  - A aplicação principal situa-se em `app/main.py`.  
-  - O bot utiliza um pipeline de ações com handlers para detectar batalhas, ataques e a seleção de Pokémon a partir de capturas de ecrã.  
-  - A interface gráfica (Tkinter) encontra-se definida em `app/gui/app_gui.py` e a barra de menu em `app/gui/menu_bar.py`.
+- **Utilities**  
+  - Functions for frame processing, OCR, configuration management, coordinate scaling, and more are located in `app/utils/`.
 
-- **Utilitários**  
-  - Funções para processamento de frames, OCR, gestão de configurações, escalonamento de coordenadas, entre outras, estão localizadas em `app/utils/`.
-
-## Requisitos
+## Requirements
 
 - Python 3.x  
-- As dependências necessárias encontram-se listadas em `app/requirements.txt`.
+- Required dependencies are listed in `app/requirements.txt`.
 
-## Instruções de Instalação e Execução
+## Installation and Execution Instructions
 
-1. **Clonar o Repositório e Configurar o Ambiente Virtual**  
-   - Clone o repositório:
+1. **Clone the Repository and Set Up a Virtual Environment**  
+   - Clone the repository:
      ```sh
      git clone https://github.com/Hugo8220337/IA_2024_2025.git
      ```
-   - Navegue até à pasta do projeto:
+   - Navigate to the project folder:
      ```sh
      cd IA_2024_2025
      ```
-   - Crie e ative um ambiente virtual:
+   - Create and activate a virtual environment:
      ```sh
      python -m venv .venv
-     # No Windows:
+     # On Windows:
      .venv\Scripts\activate
-     # No Linux/Mac:
+     # On Linux/Mac:
      source .venv/bin/activate
      ```
-     
-2. **Instalar as Dependências**  
-   - Instale as dependências necessárias:
+
+2. **Install Dependencies**  
+   - Install the required dependencies:
      ```sh
      pip install -r app/requirements.txt
      ```
 
-3. **Configuração do Ambiente**  
-   - Renomeie o ficheiro [.env.example](http://_vscodecontentref_/0) para `.env` e substitua `ROBOFLOW_PRIVATE_API_KEY` pela sua chave privada.
-   - Se necessário, edite o ficheiro [config.json](http://_vscodecontentref_/1) ou utilize as opções da interface gráfica (em “Opções”) para ajustar configurações, como o caminho para guardar as capturas de ecrã, intervalo entre capturas, etc.
+3. **Environment Configuration**  
+   - Rename the file [.env.example](https://github.com/Hugo8220337/IA_2024_2025/blob/dev/.env.example) to `.env` and replace `ROBOFLOW_PRIVATE_API_KEY` with your private key.
+   - If needed, modify the `config.json` file or adjust settings through the graphical interface (under the “Options” section) to define parameters such as the path for saving screenshots and the interval between them. Note that the `config.json` file is generated during the program's first execution.
 
-4. **Executar os Notebooks de Treino**  
-   - Inicie o Jupyter Notebook:
+4. **Run Training Notebooks**  
+   - Start Jupyter Notebook:
      ```sh
      jupyter notebook
      ```
-   - Abra e execute os notebooks:
-     - [pokemon_dataset_training.ipynb](http://_vscodecontentref_/2) para o treino do modelo de deteção de Pokémons.
-     - [attack_effectiveness_training.ipynb](http://_vscodecontentref_/3) para o treino do modelo de predição da eficácia dos ataques.
+   - Open and execute the notebooks:
+     - [pokemon_dataset_training.ipynb](https://github.com/Hugo8220337/IA_2024_2025/blob/dev/pokemon_dataset_training.ipynb) for training the Pokémon detection model.
+     - [attack_effectiveness_training.ipynb](https://github.com/Hugo8220337/IA_2024_2025/blob/dev/attack_effectiveness_training.ipynb) for training the attack effectiveness prediction model.
 
-5. **Executar a Aplicação Bot com Interface Gráfica**  
-   - Execute a aplicação principal:
+5. **Run the Bot Application with Graphical Interface**  
+   - Run the main application:
      ```sh
      python app/main.py
      ```
-   - Na interface gráfica, utilize a opção “Selecionar Modelo” no menu **File** para carregar o ficheiro do modelo YOLO (por exemplo, `best.pt` gerado após o treino).
-   - Após carregar o modelo, ative o bot através do botão “Ativar”. O bot efetuará capturas de ecrã periodicamente, processará as imagens e executará ações conforme os handlers implementados.
+   - In the graphical interface, use the “Select Model” option in the **File** menu to load the YOLO model file (e.g., `best.pt` generated after training).
+   - After loading the model, activate the bot using the “Activate” button. The bot will periodically capture screenshots, process the images, and execute actions based on the implemented handlers.
 
-## Observações
-
-- Certifique-se de possuir permissões para capturar o ecrã (especialmente em sistemas Linux, poderá ser necessário configurar variáveis de ambiente como `DISPLAY`).
-- Ajuste os parâmetros e offsets (definidos em [app/utils/contants.py](http://_vscodecontentref_/4)) conforme necessário para o seu ecrã e contexto de aplicação.
+## Notes
+- Ensure you have the necessary permissions to capture the screen. On Linux systems using the Wayland display server, you may need to configure environment variables, such as `DISPLAY`, to ensure proper functionality.
+- Adjust parameters and offsets (defined in [app/utils/contants.py](https://github.com/Hugo8220337/IA_2024_2025/blob/dev/app/utils/contants.py)) as needed for your screen and application context.
