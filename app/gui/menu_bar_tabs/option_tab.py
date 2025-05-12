@@ -11,7 +11,7 @@ class OptionsTab:
     def open_options(self):
         options_win = tk.Toplevel(self.root)
         options_win.title("Opções de Configuração")
-        options_win.geometry("350x250")
+        options_win.geometry("350x300")
 
         # Set default value for screenshot_delay input
         screenshot_delay = self.configs.get("screenshot_delay", CONFIG_SCREENSHOT_DEFAULT_DELAY)
