@@ -45,42 +45,20 @@ POKEMON_BATTLE_PROMPT = (
 )
 
 POKEMON_ATTACK_PROMPT = (
-    """You are playing Pokémon HeartGold and are currently on the battle screen where you must choose one of four available attacks.
-
-Each attack has a name and a type. Based on the provided situation and type matchups, decide the best attack to use against the enemy Pokémon.
-
-You must respond with only one of the following: attack1, attack2, attack3, or attack4.  
-Do not explain. Do not include any other text. Just output the identifier of the best attack.
-
-Some information may be missing, vague, or poorly written. Always try to interpret the context and choose the best attack.
-
-Respond with only the attack label (attack1, attack2, attack3 or attack4). No explanations or additional text.\n\n
-
-Inputs:  
-Current enemy Pokémon: {enemy_pokemon}  
-Current active Pokémon: {my_pokemon} 
-Available attacks: {attacks}  
-
-Answer:"""
+    "You are playing Pokémon and must choose the best of four attacks based on type matchups.\n"
+    "Respond with: attack1, attack2, attack3 or attack4. No explanation. No extra text.\n\n"
+    "Enemy Pokémon: {enemy_pokemon}\n"
+    "Your Pokémon: {my_pokemon}\n"
+    "Available attacks: {attacks}\n\n"
+    "Answer:"
 )
 
 POKEMON_SELECTION_PROMPT = (
-    """You are playing Pokémon HeartGold and are currently on the battle screen where you must choose one of your available Pokémon to switch in.
-
-You are provided with the current enemy Pokémon, your active Pokémon, and the list of your available team members.  
-Your goal is to select the best Pokémon to switch into, considering type advantages, resistances, and the current situation.
-
-You must respond with only one of the following: {allowed_labels_str}.  
-Do not explain. Do not include any other text. Just output the identifier of the best Pokémon to switch to.
-
-Some information may be missing, vague, or poorly written. Always try to interpret the context and choose the best option available.
-
-Respond with only the Pokémon label ({allowed_labels_str}). No explanations or additional text.
-
-Inputs:  
-Current enemy Pokémon: {enemy_pokemon}  
-Current active Pokémon: {my_pokemon}  
-Available team: {pokemons}
-
-Answer:"""
+    "You're in a Pokémon battle and must switch to one of your available Pokémon.\n"
+    "Pick the best based on type matchups and current situation.\n"
+    "Reply with only one of: {allowed_labels_str}. No explanation.\n\n"
+    "Enemy Pokémon: {enemy_pokemon}\n"
+    "Your Pokémon: {my_pokemon}\n"
+    "Team: {pokemons}\n\n"
+    "Answer:"
 )
