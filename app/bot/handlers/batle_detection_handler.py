@@ -49,13 +49,12 @@ class BattleDetectionHandler(ActionHandler, BaseDetectionHandler):
         buttons = self._get_battle_buttons(detections)
 
 
-        pokemon_info = {
-            "enemy_pokemon": enemy_name,
-            "my_pokemon": my_name
-        }
-        prompt = POKEMON_BATTLE_PROMPT.format(pokemon_info=pokemon_info)
-
+        prompt = POKEMON_BATTLE_PROMPT.format(
+            enemy_pokemon=enemy_name,
+            my_pokemon=my_name
+        )
         response = call_ollama(prompt=prompt)
+        response = response.lower()
 
         # Verify if the response contains any of the buttons
         selected_button = next((btn for btn in buttons if btn in response), None)

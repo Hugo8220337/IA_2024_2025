@@ -51,7 +51,7 @@ class AttackDetectionHandler(ActionHandler, BaseDetectionHandler):
         return ocr_utils.read_text_in_square(image, [x1, y1, x2, y2])
     
 
-    def _get_attacks(self, detections: List[Detection], image: numpy.ndarray) -> dict:
+    def _get_attacks_json(self, detections: List[Detection], image: numpy.ndarray) -> dict:
         """
         Get the attack texts from the detections.
         Returns a JSON (dict) of the form:
@@ -111,15 +111,16 @@ class AttackDetectionHandler(ActionHandler, BaseDetectionHandler):
         enemy_name = self.get_enemy_pokemon_name(detections)
 
         attacks = self._get_attack_labels(detections, image)
-        attacks_json = self._get_attacks(detections, image)
+        attacks_json = self._get_attacks_json(detections, image)
 
 
-        pokemon_info = {
-            "enemy_pokemon": enemy_name,
-            "my_pokemon": my_name
-        }
-        prompt = POKEMON_ATTACK_PROMPT.format(pokemon_info=pokemon_info, attacks=attacks_json)
+        prompt = POKEMON_ATTACK_PROMPT.format(
+            enemy_pokemon=enemy_name,
+            my_pokemon=my_name,
+            attacks=attacks_json
+        )
         response = call_ollama(prompt=prompt)
+        response = response.lower()
 
         # Verify if the response contains any of the buttons
         selected_attack = next((btn for btn in attacks if btn in response), None)

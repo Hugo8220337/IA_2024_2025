@@ -28,7 +28,7 @@ def call_ollama(
         response = requests.post(url, json=payload)
         response.raise_for_status()
         data = response.json()
-        return data.get('response', '')
+        return data.get('response', '').strip()
     except requests.RequestException as e:
         print(f"Erro ao comunicar com a API Ollama: {e}")
         return ""

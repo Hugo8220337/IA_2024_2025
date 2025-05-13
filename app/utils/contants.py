@@ -37,7 +37,10 @@ POKEMON_BATTLE_PROMPT = (
     "- run_button – if the best action is to flee the battle.\n\n"
     "Some information may be missing, vague, or poorly written. Always try to interpret the context and choose the best option.\n\n"
     "Respond with only the button name (fight_button, pokemon_button or run_button). No explanations or additional text.\n\n"
-    "Situation: {pokemon_info}\n\n"
+    "Situation: \n"
+    "Inputs:\n"
+    "Current enemy Pokémon: {enemy_pokemon}\n"
+    "Current active Pokémon: {my_pokemon}\n\n"
     "Action:"
 )
 
@@ -54,8 +57,30 @@ Some information may be missing, vague, or poorly written. Always try to interpr
 Respond with only the attack label (attack1, attack2, attack3 or attack4). No explanations or additional text.\n\n
 
 Inputs:  
-Situation: {pokemon_info}  
+Current enemy Pokémon: {enemy_pokemon}  
+Current active Pokémon: {my_pokemon} 
 Available attacks: {attacks}  
+
+Answer:"""
+)
+
+POKEMON_SELECTION_PROMPT = (
+    """You are playing Pokémon HeartGold and are currently on the battle screen where you must choose one of your available Pokémon to switch in.
+
+You are provided with the current enemy Pokémon, your active Pokémon, and the list of your available team members.  
+Your goal is to select the best Pokémon to switch into, considering type advantages, resistances, and the current situation.
+
+You must respond with only one of the following: {allowed_labels_str}.  
+Do not explain. Do not include any other text. Just output the identifier of the best Pokémon to switch to.
+
+Some information may be missing, vague, or poorly written. Always try to interpret the context and choose the best option available.
+
+Respond with only the Pokémon label ({allowed_labels_str}). No explanations or additional text.
+
+Inputs:  
+Current enemy Pokémon: {enemy_pokemon}  
+Current active Pokémon: {my_pokemon}  
+Available team: {pokemons}
 
 Answer:"""
 )
