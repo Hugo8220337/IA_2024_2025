@@ -1,10 +1,11 @@
-from typing import List
+from typing import Dict, List
 
 import numpy
+from utils import image_utils, pyautogui_utils
 from utils.ollama_utils import call_ollama
 from bot.handlers.BaseDetectionHandler import BaseDetectionHandler
 from bot.handlers.action_handler import ActionHandler
-from utils.contants import ATTACK_TEXT_X1_OFFSET, ATTACK_TEXT_X2_OFFSET, ATTACK_TEXT_Y1_OFFSET, ATTACK_TEXT_Y2_OFFSET
+from utils.contants import ATTACK_TEXT_X1_OFFSET, ATTACK_TEXT_X2_OFFSET, ATTACK_TEXT_Y1_OFFSET, ATTACK_TEXT_Y2_OFFSET, POKEMON_ATTACK_PROMPT
 from utils.frame_utils import Detection
 from utils import ocr_utils
 
@@ -49,6 +50,56 @@ class AttackDetectionHandler(ActionHandler, BaseDetectionHandler):
 
         return ocr_utils.read_text_in_square(image, [x1, y1, x2, y2])
     
+
+    def _get_attacks(self, detections: List[Detection], image: numpy.ndarray) -> dict:
+        """
+        Get the attack texts from the detections.
+        Returns a JSON (dict) of the form:
+        {
+            "attacks": {
+                "attack1": {"name": "", "type": ""},
+                "attack2": {"name": "", "type": ""},
+                ...
+            }
+        }
+
+        The OCR text is expected to contain the attack's name and, in a new line,
+        the attack's type (e.g. "water_type", "normal_type", etc.).
+        """
+        attacks = {}
+        attack_count = 1
+
+        for detection in detections:
+            if detection.confidence >= 0.5 and detection.name.lower().startswith("attack"):
+                attack_text = self._get_attack_text(detection, image)
+                if attack_text:
+                    # Split the OCR result by lines. Assume the last line represents the type.
+                    lines = [line.strip() for line in attack_text.splitlines() if line.strip()]
+                    if lines:
+                        if len(lines) >= 2:
+                            # Join all lines except the last as the attack name
+                            name = " ".join(lines[:-1])
+                            atype = lines[-1]
+                        else:
+                            name = lines[0]
+                            atype = ""
+                        attacks[f"attack{attack_count}"] = {"name": name, "type": atype}
+                        attack_count += 1
+        
+        return {"attacks": attacks}
+
+    def _get_attack_labels(self, detections: List[Detection], image: numpy.ndarray) -> Dict[str, Detection]:
+        """
+        Returns a dictionary mapping attack labels (e.g. "attack1", "attack2") to their corresponding Detection objects.
+        """
+        attack_labels: Dict[str, Detection] = {}
+        attack_count = 1
+        for detection in detections:
+            if detection.confidence >= 0.5 and detection.name.lower().startswith("attack"):
+                attack_labels[f"attack{attack_count}"] = detection
+                attack_count += 1
+        return attack_labels
+    
     def handle(self, detections: List[Detection], image) -> None:
         if not self._is_attacking(detections):
             return
@@ -58,16 +109,31 @@ class AttackDetectionHandler(ActionHandler, BaseDetectionHandler):
         # Iterate through the detections to find attack text
         my_name = self.get_my_pokemon_name(detections)
         enemy_name = self.get_enemy_pokemon_name(detections)
-        # my_level = self.get_my_level(detections, image)
-        # enemy_level = self.get_enemy_level(detections, image)
 
-        # attacks = []
-        # for detection in detections:
-        #     if detection.name.lower().startswith("attack"):
-        #         attack_text = self._get_attack_text(detection, image)
-        #         attacks.append(attack_text)
-        #         print(f"Attack text: {attack_text}")
+        attacks = self._get_attack_labels(detections, image)
+        attacks_json = self._get_attacks(detections, image)
 
-        # Logic to handle the attack detection
+
+        pokemon_info = {
+            "enemy_pokemon": enemy_name,
+            "my_pokemon": my_name
+        }
+        prompt = POKEMON_ATTACK_PROMPT.format(pokemon_info=pokemon_info, attacks=attacks_json)
+        response = call_ollama(prompt=prompt)
+
+        # Verify if the response contains any of the buttons
+        selected_attack = next((btn for btn in attacks if btn in response), None)
+        
+        if selected_attack in attacks:
+            # Perform the action based on the response
+            attack_button = attacks.get(selected_attack)
+            if attack_button:
+                x_min, y_min, x_max, y_max = attack_button.coordinates
+                x, y = image_utils.calculate_middle(x_min, y_min, x_max, y_max)
+                pyautogui_utils.perform_click(x, y)
+        else:
+            print("Unknown action detected!")
+        
+
 
         

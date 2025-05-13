@@ -23,7 +23,7 @@ POKEMON_TEXT_Y2_OFFSET = 64  # Offset subtracted from the bottom coordinate
 Constants for OLLAMA
 """ 
 OLLAMA_MODEL_ENDPOINT = "http://localhost:11434/api/generate"  # End point for OLLAMA
-OLLAMA_MODEL = "tinyllama"  # Default model for OLLAMA
+OLLAMA_MODEL = "phi"  # Default model for OLLAMA
 
 """
 Prompt for LLM
@@ -35,9 +35,27 @@ POKEMON_BATTLE_PROMPT = (
     "- fight_button – if the best action is to attack the opponent.\n\n"
     "- pokemon_button – if the best action is to switch to another Pokémon.\n\n"
     "- run_button – if the best action is to flee the battle.\n\n"
-    "- bag_button – if the best action is to use an item from your bag.\n\n"
     "Some information may be missing, vague, or poorly written. Always try to interpret the context and choose the best option.\n\n"
-    "Respond with only the button name (fight_button, pokemon_button, run_button, or bag_button). No explanations or additional text.\n\n"
-    "Situation: {data}\n\n"
+    "Respond with only the button name (fight_button, pokemon_button or run_button). No explanations or additional text.\n\n"
+    "Situation: {pokemon_info}\n\n"
     "Action:"
+)
+
+POKEMON_ATTACK_PROMPT = (
+    """You are playing Pokémon HeartGold and are currently on the battle screen where you must choose one of four available attacks.
+
+Each attack has a name and a type. Based on the provided situation and type matchups, decide the best attack to use against the enemy Pokémon.
+
+You must respond with only one of the following: attack1, attack2, attack3, or attack4.  
+Do not explain. Do not include any other text. Just output the identifier of the best attack.
+
+Some information may be missing, vague, or poorly written. Always try to interpret the context and choose the best attack.
+
+Respond with only the attack label (attack1, attack2, attack3 or attack4). No explanations or additional text.\n\n
+
+Inputs:  
+Situation: {pokemon_info}  
+Available attacks: {attacks}  
+
+Answer:"""
 )

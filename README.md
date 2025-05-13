@@ -67,6 +67,22 @@ This repository contains scripts and applications for training and inference usi
    - In the graphical interface, use the “Select Model” option in the **File** menu to load the YOLO model file (e.g., `best.pt` generated after training).
    - After loading the model, activate the bot using the “Activate” button. The bot will periodically capture screenshots, process the images, and execute actions based on the implemented handlers.
 
+## Local Language Model (LLM) Integration
+
+This project integrates a local Large Language Model (LLM) using [**Ollama**](https://ollama.com/) to generate text-based decisions, messages, or support interactions within the bot.
+
+### Model Used
+
+We use the [`phi:chat`](https://ollama.com/library/phi) model, which is lightweight and works well on machines **without a GPU**, making it ideal for development on low-spec systems.
+
+### Running the Model Locally
+
+To run the model locally, first make sure Ollama is installed. Then, pull and run the Phi chat model with:
+
+```sh
+ollama run phi:chat
+```
+
 ## Notes
-- Ensure you have the necessary permissions to capture the screen. On Linux systems using the Wayland display server, you may need to configure environment variables, such as `DISPLAY`, to ensure proper functionality.
-- Adjust parameters and offsets (defined in [app/utils/contants.py](https://github.com/Hugo8220337/IA_2024_2025/blob/dev/app/utils/contants.py)) as needed for your screen and application context.
+- Ensure you have the necessary permissions to capture the screen. On Linux systems using the Wayland display server, you may need to configure environment variables, such as DISPLAY, to ensure proper functionality.
+- Adjust parameters and offsets (defined in app/utils/contants.py) as needed for your screen and application context.
