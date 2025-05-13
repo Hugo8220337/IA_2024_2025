@@ -1,6 +1,7 @@
 from typing import List
 
 import numpy
+from utils.ollama_utils import call_ollama
 from bot.handlers.BaseDetectionHandler import BaseDetectionHandler
 from bot.handlers.action_handler import ActionHandler
 from utils.contants import ATTACK_TEXT_X1_OFFSET, ATTACK_TEXT_X2_OFFSET, ATTACK_TEXT_Y1_OFFSET, ATTACK_TEXT_Y2_OFFSET
@@ -55,15 +56,11 @@ class AttackDetectionHandler(ActionHandler, BaseDetectionHandler):
         print("Attack detected!")
 
         # Iterate through the detections to find attack text
-        my_level = self.get_my_level(detections, image)
-        enemy_level = self.get_enemy_level(detections, image)
-        enemy_name = self.get_enemy_pokemon_name(detections)
         my_name = self.get_my_pokemon_name(detections)
+        enemy_name = self.get_enemy_pokemon_name(detections)
+        # my_level = self.get_my_level(detections, image)
+        # enemy_level = self.get_enemy_level(detections, image)
 
-        print("My level:", my_level)
-        print("Enemy level:", enemy_level)
-        print("Enemy name:", enemy_name)
-        print("My name:", my_name)
         # attacks = []
         # for detection in detections:
         #     if detection.name.lower().startswith("attack"):

@@ -3,7 +3,11 @@ from utils.contants import CONFIG_INSTANCE, CONFIG_SCREENSHOT_DEFAULT_DELAY, CON
 import json
 import os
 
-
+"""
+This module provides a singleton class for managing application configuration settings.
+The configuration is stored in a JSON file, and the class provides methods to load,
+get, set, and save configuration settings.
+"""
 class Config:
     _instance = None
 

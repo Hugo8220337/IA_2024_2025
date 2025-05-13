@@ -1,5 +1,7 @@
 import numpy
 from typing import List
+from utils.contants import POKEMON_BATTLE_PROMPT
+from utils.ollama_utils import call_ollama
 from bot.handlers.action_handler import ActionHandler
 from utils import pyautogui_utils
 from bot.handlers.BaseDetectionHandler import BaseDetectionHandler
@@ -39,13 +41,35 @@ class BattleDetectionHandler(ActionHandler, BaseDetectionHandler):
         print("Battle detected!")
 
 
+        # Process pokemon names and levels
+        enemy_name = self.get_enemy_pokemon_name(detections)
+        my_name = self.get_my_pokemon_name(detections)
+
         # Process the battle buttons
         buttons = self._get_battle_buttons(detections)
-        fight_button = buttons.get("fight_button")
-        
-        x_min, y_min, x_max, y_max = fight_button.coordinates
 
-        
-        x, y = image_utils.calculate_middle(x_min, y_min, x_max, y_max)
 
-        pyautogui_utils.perform_click(x, y)
+        data = {
+            "enemy_name": enemy_name,
+            "my_name": my_name
+        }
+        prompt = POKEMON_BATTLE_PROMPT.format(data=data)
+
+        response = call_ollama(
+            prompt=prompt,
+            model="tinyllama",
+            stream=False,
+        )
+
+        # Verify if the response contains any of the buttons
+        selected_button = next((btn for btn in buttons if btn in response), None)
+        
+        if selected_button in buttons:
+            # Perform the action based on the response
+            button = buttons.get(selected_button)
+            if button:
+                x_min, y_min, x_max, y_max = button.coordinates
+                x, y = image_utils.calculate_middle(x_min, y_min, x_max, y_max)
+                pyautogui_utils.perform_click(x, y)
+        else:
+            print("Unknown action detected!")
