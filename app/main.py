@@ -15,7 +15,7 @@ def main():
     )
 
     # Set up the main application GUI
-    gui = AppGUI(root, bot_controller)
+    gui = AppGUI(root, bot_controller, configs)
 
     # Set up the bot controller with the GUI
     bot_controller.gui = gui

@@ -1,4 +1,4 @@
-from utils.contants import CONFIG_INSTANCE, CONFIG_SCREENSHOT_DEFAULT_DELAY, CONFIG_SCREENSHOT_DEFAULT_OPTION, CONFIG_SCREENSHOT_DEFAULT_PATH
+from utils.contants import CONFIG_INSTANCE, CONFIG_SCREENSHOT_DEFAULT_DELAY, CONFIG_SCREENSHOT_DEFAULT_OPTION, CONFIG_SCREENSHOT_DEFAULT_PATH, CONFIG_SHOW_TAKEN_SCREENSHOTS
 
 import json
 import os
@@ -45,7 +45,8 @@ class Config:
             self.settings = {
                 "screenshot_delay": CONFIG_SCREENSHOT_DEFAULT_DELAY,
                 "save_screenshots": CONFIG_SCREENSHOT_DEFAULT_OPTION,
-                "screenshot_path": CONFIG_SCREENSHOT_DEFAULT_PATH  # A directory that always exists on Windows systems
+                "screenshot_path": CONFIG_SCREENSHOT_DEFAULT_PATH,  # A directory that always exists on Windows systems
+                "show_taken_screenshots": CONFIG_SHOW_TAKEN_SCREENSHOTS,
             }
             self.save()
 

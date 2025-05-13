@@ -3,12 +3,14 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 import cv2
 
+from utils.config import Config
 from bot.bot_controller import BotController
 
 class AppGUI:
-    def __init__(self, root: tk, bot_controller: BotController):
+    def __init__(self, root: tk, bot_controller: BotController, configs: Config):
         self._root = root
         self._bot_controller = bot_controller
+        self.configs = configs
 
         self._root.title("PokeNoob - Bot for noobs")
         self.status_text = tk.StringVar(value="Inativo")
@@ -53,13 +55,16 @@ class AppGUI:
 
     def update_image(self, frame):
         """
-        Update the displayed image in the GUI.
+        Update the displayed image in the GUI with the given frame,
+        if the option is enabled.
         """
-        rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        img_pil = Image.fromarray(rgb_image).resize((800, 480))
-        img_tk = ImageTk.PhotoImage(img_pil)
-        self.label_img.imgtk = img_tk  # Prevents garbage collection.
-        self.label_img.config(image=img_tk)
+        show_taken_screenshots = self.configs.get("show_taken_screenshots", True)
+        if show_taken_screenshots:
+            rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            img_pil = Image.fromarray(rgb_image).resize((800, 480))
+            img_tk = ImageTk.PhotoImage(img_pil)
+            self.label_img.imgtk = img_tk  # Prevents garbage collection.
+            self.label_img.config(image=img_tk)
 
     def enable_toggle(self):
         """

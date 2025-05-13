@@ -1,4 +1,4 @@
-from utils.contants import CONFIG_INSTANCE, CONFIG_SCREENSHOT_DEFAULT_DELAY, CONFIG_SCREENSHOT_DEFAULT_OPTION, CONFIG_SCREENSHOT_DEFAULT_PATH
+from utils.contants import CONFIG_INSTANCE, CONFIG_SCREENSHOT_DEFAULT_DELAY, CONFIG_SCREENSHOT_DEFAULT_OPTION, CONFIG_SCREENSHOT_DEFAULT_PATH, CONFIG_SHOW_TAKEN_SCREENSHOTS
 import tkinter as tk
 from utils.config import Config
 from tkinter import filedialog
@@ -24,6 +24,11 @@ class OptionsTab:
         save_var = tk.BooleanVar(value=save_screenshots)
         tk.Checkbutton(options_win, text="Guardar screenshots", variable=save_var).pack(pady=5)
 
+        # Set default value for save_screenshots checkbox
+        show_taken_screenshots = self.configs.get("show_taken_screenshots", CONFIG_SHOW_TAKEN_SCREENSHOTS)
+        show_taken_screenshots_var = tk.BooleanVar(value=show_taken_screenshots)
+        tk.Checkbutton(options_win, text="Mostrar screenshots tiradas", variable=show_taken_screenshots_var).pack(pady=5)
+
         # Screenshot path input
         screenshot_path = self.configs.get("screenshot_path", CONFIG_SCREENSHOT_DEFAULT_PATH)
         tk.Label(options_win, text="Caminho para guardar screenshots:").pack(pady=5)
@@ -43,6 +48,7 @@ class OptionsTab:
                 self.configs.set("screenshot_delay", int(delay_var.get()))
                 self.configs.set("save_screenshots", save_var.get())
                 self.configs.set("screenshot_path", screenshot_path_var.get())
+                self.configs.set("show_taken_screenshots", show_taken_screenshots_var.get())
                 options_win.destroy() # Close the options window
             except ValueError:
                 tk.messagebox.showerror("Erro", "Por favor, insira um número válido para o intervalo de screenshots.")
