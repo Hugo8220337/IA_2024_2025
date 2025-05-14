@@ -85,4 +85,4 @@ ollama run phi:chat
 
 ## Notes
 - Ensure you have the necessary permissions to capture the screen. On Linux systems using the Wayland display server, you may need to configure environment variables, such as DISPLAY, to ensure proper functionality.
-- Adjust parameters and offsets (defined in app/utils/contants.py) as needed for your screen and application context.
+- Adjust parameters and offsets (defined in `app/utils/contants.py`) as needed for your screen and application context.
