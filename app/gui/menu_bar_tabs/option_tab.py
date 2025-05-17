@@ -1,4 +1,4 @@
-from utils.contants import CONFIG_INSTANCE, CONFIG_SCREENSHOT_DEFAULT_DELAY, CONFIG_SCREENSHOT_DEFAULT_OPTION, CONFIG_SCREENSHOT_DEFAULT_PATH, CONFIG_SHOW_TAKEN_SCREENSHOTS
+from utils.contants import CONFIG_SCREENSHOT_DEFAULT_DELAY, CONFIG_SCREENSHOT_DEFAULT_OPTION, CONFIG_SCREENSHOT_DEFAULT_PATH, CONFIG_SHOW_TAKEN_SCREENSHOTS
 import tkinter as tk
 from utils.config import Config
 from tkinter import filedialog
@@ -27,7 +27,7 @@ class OptionsTab:
         # Set default value for save_screenshots checkbox
         show_taken_screenshots = self.configs.get("show_taken_screenshots", CONFIG_SHOW_TAKEN_SCREENSHOTS)
         show_taken_screenshots_var = tk.BooleanVar(value=show_taken_screenshots)
-        tk.Checkbutton(options_win, text="Mostrar screenshots tiradas", variable=show_taken_screenshots_var).pack(pady=5)
+        tk.Checkbutton(options_win, text="Exibir screenshots capturadas", variable=show_taken_screenshots_var).pack(pady=5)
 
         # Screenshot path input
         screenshot_path = self.configs.get("screenshot_path", CONFIG_SCREENSHOT_DEFAULT_PATH)
