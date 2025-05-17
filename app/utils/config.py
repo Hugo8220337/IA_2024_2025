@@ -13,7 +13,7 @@ class Config:
 
     def __init__(self, config_file=CONFIG_INSTANCE):
         if Config._instance is not None:
-            raise Exception("Esta classe é um singleton!")
+            raise Exception("This class is a singleton!")
         
         self.config_file = config_file
         self.settings = {}

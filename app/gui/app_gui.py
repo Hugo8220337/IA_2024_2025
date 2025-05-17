@@ -12,9 +12,9 @@ class AppGUI:
         self._bot_controller = bot_controller
         self.configs = configs
 
-        self._root.title("PokeNoob - Bot for noobs")
-        self.status_text = tk.StringVar(value="Inativo")
-        self.model_status_text = tk.StringVar(value="Nenhum modelo carregado")
+        self._root.title("Pokémon Bot")
+        self.status_text = tk.StringVar(value="Inactive")
+        self.model_status_text = tk.StringVar(value="No model loaded")
         self.setup_gui()
 
     def setup_gui(self):
@@ -30,7 +30,7 @@ class AppGUI:
         self.label_img.pack(pady=10)
 
         # Create a button to load the model
-        self.btn_toggle = ttk.Button(frame, text="Ativar", command=self.toggle_bot, state=tk.DISABLED)
+        self.btn_toggle = ttk.Button(frame, text="Activate", command=self.toggle_bot, state=tk.DISABLED)
         self.btn_toggle.pack()
         ttk.Label(frame, textvariable=self.status_text).pack(pady=5)
 
@@ -40,12 +40,12 @@ class AppGUI:
         """
         if self._bot_controller.running:
             self._bot_controller.stop_bot()
-            self.status_text.set("Inativo")
-            self.btn_toggle.config(text="Ativar")
+            self.status_text.set("Inactive")
+            self.btn_toggle.config(text="Activate")
         else:
             self._bot_controller.start_bot()
-            self.status_text.set("Ativo")
-            self.btn_toggle.config(text="Desativar")
+            self.status_text.set("Active")
+            self.btn_toggle.config(text="Deactivate")
 
     def update_model_status(self, text):
         """

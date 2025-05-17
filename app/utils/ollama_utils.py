@@ -30,5 +30,5 @@ def call_ollama(
         data = response.json()
         return data.get('response', '').strip()
     except requests.RequestException as e:
-        print(f"Erro ao comunicar com a API Ollama: {e}")
+        print(f"Error communicating with the Ollama API: {e}")
         return ""

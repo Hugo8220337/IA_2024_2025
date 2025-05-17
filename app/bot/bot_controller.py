@@ -74,5 +74,5 @@ class BotController:
         self.yolo_model = YOLO(file_path)
 
         # Update the GUI with the loaded model status
-        self.gui.update_model_status(f"Modelo carregado: {file_path}")
+        self.gui.update_model_status(f"Model loaded: {file_path}")
         self.gui.enable_toggle() 
