@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 import cv2
 from PIL import Image
+import numpy
 
 def save_screenshot(screenshot, save_path: str) -> None:
     """
@@ -66,3 +67,10 @@ def calculate_middle(x_min: int, y_min: int, x_max: int, y_max: int) -> tuple[in
         A tuple containing the middle x and y coordinates.
     """
     return (x_min + x_max) // 2, (y_min + y_max) // 2
+
+def is_inside(child: numpy.ndarray, parent: numpy.ndarray) -> bool:
+        """
+        Returns True if the rectangle defined by 'child' is completely inside the rectangle defined by 'parent'.
+        Both are expected as [x1, y1, x2, y2].
+        """
+        return child[0] >= parent[0] and child[1] >= parent[1] and child[2] <= parent[2] and child[3] <= parent[3]    

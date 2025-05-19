@@ -49,92 +49,86 @@ class AttackDetectionHandler(ActionHandler, BaseDetectionHandler):
         y2 = int(detection.coordinates[3]) - ATTACK_TEXT_Y2_OFFSET
 
         return ocr_utils.read_text_in_square(image, [x1, y1, x2, y2])
-    
 
     def _get_attacks_json(self, detections: List[Detection], image: numpy.ndarray) -> dict:
         """
-        Get the attack texts from the detections.
-        Returns a JSON (dict) of the form:
+        Extract attack names and types from detections using OCR.
+        If the OCR result does not capture a type, searches for a detection whose name starts with "type"
+        within the attack detection's coordinates.
+        Returns:
         {
             "attacks": {
                 "attack1": {"name": "", "type": ""},
-                "attack2": {"name": "", "type": ""},
                 ...
             }
         }
-
-        The OCR text is expected to contain the attack's name and, in a new line,
-        the attack's type (e.g. "water_type", "normal_type", etc.).
         """
         attacks = {}
-        attack_count = 1
+        attack_num = 1
 
         for detection in detections:
-            if detection.confidence >= 0.5 and detection.name.lower().startswith("attack"):
-                attack_text = self._get_attack_text(detection, image)
-                if attack_text:
-                    # Split the OCR result by lines. Assume the last line represents the type.
-                    lines = [line.strip() for line in attack_text.splitlines() if line.strip()]
-                    if lines:
-                        if len(lines) >= 2:
-                            # Join all lines except the last as the attack name
-                            name = " ".join(lines[:-1])
-                            atype = lines[-1]
-                        else:
-                            name = lines[0]
-                            atype = ""
-                        attacks[f"attack{attack_count}"] = {"name": name, "type": atype}
-                        attack_count += 1
-        
+            if detection.confidence < 0.5 or not detection.name.lower().startswith("attack"):
+                continue
+
+            attack_text = self._get_attack_text(detection, image)
+            if attack_text:
+                # Split the OCR result by lines; assume the last line may represent the type.
+                lines = [line.strip() for line in attack_text.splitlines() if line.strip()]
+                if lines:
+                    if len(lines) >= 2:
+                        name = " ".join(lines[:-1])
+                        atype = lines[-1]
+                    else:
+                        name = lines[0]
+                        atype = ""
+                else:
+                    name, atype = "", ""
+            else:
+                name, atype = "", ""
+
+            # If type is empty from OCR, search among detections for one with a "type" label
+            # that lies within the attack detection's coordinates.
+            if not atype:
+                for other in detections:
+                    if other.name.lower().startswith("type"):
+                        if image_utils.is_inside(other.coordinates, detection.coordinates):
+                            # Extract type from detection name e.g. "type_bug" -> "bug"
+                            atype = other.name.lower().replace("type", "").strip("_ ")
+                            break
+
+            attacks[f"attack{attack_num}"] = {"name": name, "type": atype}
+            attack_num += 1
+
         return {"attacks": attacks}
-
-    def _get_attack_labels(self, detections: List[Detection], image: numpy.ndarray) -> Dict[str, Detection]:
-        """
-        Returns a dictionary mapping attack labels (e.g. "attack1", "attack2") to their corresponding Detection objects.
-        """
-        attack_labels: Dict[str, Detection] = {}
-        attack_count = 1
-        for detection in detections:
-            if detection.confidence >= 0.5 and detection.name.lower().startswith("attack"):
-                attack_labels[f"attack{attack_count}"] = detection
-                attack_count += 1
-        return attack_labels
     
     def handle(self, detections: List[Detection], image) -> None:
         if not self._is_attacking(detections):
             return
-        
+
         print("Attack detected!")
 
-        # Iterate through the detections to find attack text
         my_name = self.get_my_pokemon_name(detections)
         enemy_name = self.get_enemy_pokemon_name(detections)
 
-        attacks = self._get_attack_labels(detections, image)
         attacks_json = self._get_attacks_json(detections, image)
-
 
         prompt = POKEMON_ATTACK_PROMPT.format(
             enemy_pokemon=enemy_name,
             my_pokemon=my_name,
             attacks=attacks_json
         )
-        response = call_ollama(prompt=prompt)
-        response = response.lower()
+        response = call_ollama(prompt=prompt).lower()
 
         # Verify if the response contains any of the buttons
-        selected_attack = next((btn for btn in attacks if btn in response), None)
+        selected_attack = next((label for label in attacks_json["attacks"] if label in response), None)
         
-        if selected_attack in attacks:
-            # Perform the action based on the response
-            attack_button = attacks.get(selected_attack)
+        if selected_attack:
+            attack_button = next((attack for attack in detections if attack.name.lower() == selected_attack), None)
             if attack_button:
                 x_min, y_min, x_max, y_max = attack_button.coordinates
                 x, y = image_utils.calculate_middle(x_min, y_min, x_max, y_max)
                 pyautogui_utils.perform_click(x, y)
+            else:
+                print("Coordinates not found for selected attack!")
         else:
-            print("Unknown action detected!")
-        
-
-
-        
+            print("Unknown action detected!")        
