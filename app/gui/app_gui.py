@@ -12,7 +12,7 @@ class AppGUI:
         self._bot_controller = bot_controller
         self.configs = configs
 
-        self._root.title("Pokémon Bot")
+        self._root.title("Pokemon Bot")
         self.status_text = tk.StringVar(value="Inactive")
         self.model_status_text = tk.StringVar(value="No model loaded")
         self.setup_gui()

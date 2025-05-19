@@ -69,7 +69,6 @@ class BotController:
         """
         Load the YOLO model from the specified file path.
         """
-
         # Load the YOLO model
         self.yolo_model = YOLO(file_path)
 
