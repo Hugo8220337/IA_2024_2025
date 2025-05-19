@@ -15,14 +15,14 @@ class FileTab:
         """
         Create the File menu items.
         """
-        self.menu.add_command(label="Selecionar Modelo", command=self.select_model)
+        self.menu.add_command(label="Select Model", command=self.select_model)
 
     def select_model(self):
         """
         Open a file dialog to select a YOLO model file.
         """
         file_path = filedialog.askopenfilename(
-            title="Selecionar Modelo YOLO",
+            title="Select YOLO Model",
             filetypes=[("Model Files", "*.pt"), ("All Files", "*.*")]
         )
 

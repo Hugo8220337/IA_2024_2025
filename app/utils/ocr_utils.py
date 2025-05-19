@@ -1,6 +1,22 @@
 import numpy as np
 import easyocr
 
+"""
+This module provides a singleton class for the OCR reader and a function to read text
+from a specified square in an image using the EasyOCR library.
+The OCR reader is initialized only once and reused for subsequent calls to improve performance.
+The `read_text_in_square` function extracts a square region from the image based on the provided coordinates
+and uses the OCR reader to read the text within that region.
+"""
+class OCRReaderSingleton:
+    _instance = None
+
+    @classmethod
+    def get_instance(cls):
+        if cls._instance is None:
+            cls._instance = easyocr.Reader(['en'], gpu=True)
+        return cls._instance
+    
 def read_text_in_square(
     image: np.ndarray,
     coords: list[int],
@@ -35,8 +51,8 @@ def read_text_in_square(
     if roi.size == 0:
         return ""
     
-    # Initializes the EasyOCR reader (in this example, configured for Portuguese)
-    reader = easyocr.Reader(languages, gpu=enable_gpu)
+    # gets the OCR reader instance
+    reader = OCRReaderSingleton.get_instance()
     
     # Reads the text in the ROI without additional details (only the text)
     results = reader.readtext(roi, detail=0)

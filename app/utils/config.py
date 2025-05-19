@@ -1,15 +1,19 @@
-from utils.contants import CONFIG_INSTANCE, CONFIG_SCREENSHOT_DEFAULT_DELAY, CONFIG_SCREENSHOT_DEFAULT_OPTION, CONFIG_SCREENSHOT_DEFAULT_PATH
+from utils.contants import CONFIG_INSTANCE, CONFIG_SCREENSHOT_DEFAULT_DELAY, CONFIG_SCREENSHOT_DEFAULT_OPTION, CONFIG_SCREENSHOT_DEFAULT_PATH, CONFIG_SHOW_TAKEN_SCREENSHOTS
 
 import json
 import os
 
-
+"""
+This module provides a singleton class for managing application configuration settings.
+The configuration is stored in a JSON file, and the class provides methods to load,
+get, set, and save configuration settings.
+"""
 class Config:
     _instance = None
 
     def __init__(self, config_file=CONFIG_INSTANCE):
         if Config._instance is not None:
-            raise Exception("Esta classe é um singleton!")
+            raise Exception("This class is a singleton!")
         
         self.config_file = config_file
         self.settings = {}
@@ -41,7 +45,8 @@ class Config:
             self.settings = {
                 "screenshot_delay": CONFIG_SCREENSHOT_DEFAULT_DELAY,
                 "save_screenshots": CONFIG_SCREENSHOT_DEFAULT_OPTION,
-                "screenshot_path": CONFIG_SCREENSHOT_DEFAULT_PATH  # A directory that always exists on Windows systems
+                "screenshot_path": CONFIG_SCREENSHOT_DEFAULT_PATH,  # A directory that always exists on Windows systems
+                "show_taken_screenshots": CONFIG_SHOW_TAKEN_SCREENSHOTS,
             }
             self.save()
 

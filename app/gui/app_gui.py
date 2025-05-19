@@ -3,16 +3,18 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 import cv2
 
+from utils.config import Config
 from bot.bot_controller import BotController
 
 class AppGUI:
-    def __init__(self, root: tk, bot_controller: BotController):
+    def __init__(self, root: tk, bot_controller: BotController, configs: Config):
         self._root = root
         self._bot_controller = bot_controller
+        self.configs = configs
 
-        self._root.title("PokeNoob - Bot for noobs")
-        self.status_text = tk.StringVar(value="Inativo")
-        self.model_status_text = tk.StringVar(value="Nenhum modelo carregado")
+        self._root.title("Pokemon Bot")
+        self.status_text = tk.StringVar(value="Inactive")
+        self.model_status_text = tk.StringVar(value="No model loaded")
         self.setup_gui()
 
     def setup_gui(self):
@@ -28,7 +30,7 @@ class AppGUI:
         self.label_img.pack(pady=10)
 
         # Create a button to load the model
-        self.btn_toggle = ttk.Button(frame, text="Ativar", command=self.toggle_bot, state=tk.DISABLED)
+        self.btn_toggle = ttk.Button(frame, text="Activate", command=self.toggle_bot, state=tk.DISABLED)
         self.btn_toggle.pack()
         ttk.Label(frame, textvariable=self.status_text).pack(pady=5)
 
@@ -38,12 +40,12 @@ class AppGUI:
         """
         if self._bot_controller.running:
             self._bot_controller.stop_bot()
-            self.status_text.set("Inativo")
-            self.btn_toggle.config(text="Ativar")
+            self.status_text.set("Inactive")
+            self.btn_toggle.config(text="Activate")
         else:
             self._bot_controller.start_bot()
-            self.status_text.set("Ativo")
-            self.btn_toggle.config(text="Desativar")
+            self.status_text.set("Active")
+            self.btn_toggle.config(text="Deactivate")
 
     def update_model_status(self, text):
         """
@@ -53,13 +55,16 @@ class AppGUI:
 
     def update_image(self, frame):
         """
-        Update the displayed image in the GUI.
+        Update the displayed image in the GUI with the given frame,
+        if the option is enabled.
         """
-        rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        img_pil = Image.fromarray(rgb_image).resize((800, 480))
-        img_tk = ImageTk.PhotoImage(img_pil)
-        self.label_img.imgtk = img_tk  # Prevents garbage collection.
-        self.label_img.config(image=img_tk)
+        show_taken_screenshots = self.configs.get("show_taken_screenshots", True)
+        if show_taken_screenshots:
+            rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            img_pil = Image.fromarray(rgb_image).resize((800, 480))
+            img_tk = ImageTk.PhotoImage(img_pil)
+            self.label_img.imgtk = img_tk  # Prevents garbage collection.
+            self.label_img.config(image=img_tk)
 
     def enable_toggle(self):
         """

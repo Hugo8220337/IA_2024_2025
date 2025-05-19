@@ -3,3 +3,4 @@ mss
 ultralytics
 pyautogui
 easyocr
+requests

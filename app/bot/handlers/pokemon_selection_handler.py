@@ -1,9 +1,12 @@
 import numpy
-from typing import List
+import time
+from typing import Dict, List
+from utils import image_utils, pyautogui_utils
+from utils.ollama_utils import call_ollama
 from bot.handlers.BaseDetectionHandler import BaseDetectionHandler
 from bot.handlers.action_handler import ActionHandler
 from utils import ocr_utils
-from utils.contants import POKEMON_TEXT_X1_OFFSET, POKEMON_TEXT_X2_OFFSET, POKEMON_TEXT_Y1_OFFSET, POKEMON_TEXT_Y2_OFFSET
+from utils.contants import POKEMON_SELECTION_PROMPT, POKEMON_TEXT_X1_OFFSET, POKEMON_TEXT_X2_OFFSET, POKEMON_TEXT_Y1_OFFSET, POKEMON_TEXT_Y2_OFFSET
 from utils.frame_utils import Detection
 
 class PokemonSelectionDetectionHandler(ActionHandler, BaseDetectionHandler):
@@ -35,18 +38,83 @@ class PokemonSelectionDetectionHandler(ActionHandler, BaseDetectionHandler):
         # Assuming OCR function is defined elsewhere
         return ocr_utils.read_text_in_square(image, [x1, y1, x2, y2])
     
+    def _get_pokemons_json(self, detections: List[Detection], image: numpy.ndarray) -> dict:
+        """
+        Returns a JSON with the pokemons detected in the selection screen.
+        {
+            "pokemons": {
+                "pokemon1": "pokemonName",
+                "pokemon2": "pokemonName",
+                ...
+                "pokemon6": "pokemonName"
+            }
+        }
+        """
+        pokemons = {}
+        count = 1
+        for detection in detections:
+            if detection.name.lower().startswith("pokemon") and count <= 6:
+                pokemon_name = self._get_pokemon_text(detection, image)
+                if pokemon_name:
+                    pokemons[f"pokemon{count}"] = pokemon_name
+                    count += 1
+        return {"pokemons": pokemons}
+    
+    def _get_pokemon_labels(self, detections: List[Detection], image: numpy.ndarray) -> Dict[str, Detection]:
+        """
+        Returns a dictionary mapping pokemon labels (e.g. "pokemon1", "pokemon2", ..., "pokemon6")
+        to their corresponding Detection objects.
+        """
+        pokemon_labels: Dict[str, Detection] = {}
+        count = 1
+        for detection in detections:
+            if detection.name.lower().startswith("pokemon") and count <= 6:
+                pokemon_labels[f"pokemon{count}"] = detection
+                count += 1
+        return pokemon_labels
+    
+    def _get_back_button(self, detections: List[Detection]) -> Detection:
+        """
+        Returns the back button detection if found.
+        """
+        for detection in detections:
+            if detection.name.lower() == "back_button":
+                return detection
+        return None
+    
     def handle(self, detections: List[Detection], image: numpy.ndarray) -> None:
         if not self._is_choosing_pokemon(detections):
             return
         
         print("Pokemon selection detected!")
 
-        # Iterate through the detections to find pokemons text in the selection screen
-        pokemons = []
-        for detection in detections:
-            if detection.name.lower().startswith("pokemon"):
-                pokemon_text = self._get_pokemon_text(detection, image)
-                pokemons.append(pokemon_text)
-                print(f"Pokemon text: {pokemon_text}")
-        
-        # Perform battle detection actions
+        my_name = self.get_my_pokemon_name(detections)
+        enemy_name = self.get_enemy_pokemon_name(detections)
+        pokemons = self._get_pokemon_labels(detections, image)
+        pokemons_json = self._get_pokemons_json(detections, image)
+
+        prompt = POKEMON_SELECTION_PROMPT.format(
+            allowed_labels_str=", ".join(pokemons.keys()),
+            enemy_pokemon=enemy_name,
+            my_pokemon=my_name,
+            pokemons=pokemons_json
+        )
+        response = call_ollama(prompt=prompt)
+        response = response.lower()
+
+        selected_pokemon = next(
+            (label for label, name in pokemons_json["pokemons"].items() if name.lower() in response),
+            None
+        ) 
+               
+        if not selected_pokemon:
+            print("Unknown action detected!")
+            return
+
+        target = pokemons[selected_pokemon] if selected_pokemon != "pokemon1" else self._get_back_button(detections)
+        if target:
+            x, y = image_utils.calculate_middle(*target.coordinates)
+            pyautogui_utils.perform_click(x, y)
+            if selected_pokemon != "pokemon1":
+                time.sleep(0.5)
+                pyautogui_utils.perform_click(x, y)
