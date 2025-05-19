@@ -102,15 +102,19 @@ class PokemonSelectionDetectionHandler(ActionHandler, BaseDetectionHandler):
         response = call_ollama(prompt=prompt)
         response = response.lower()
 
-        selected_attack = next((btn for btn in pokemons if btn in response), None)
-        if not selected_attack:
+        selected_pokemon = next(
+            (label for label, name in pokemons_json["pokemons"].items() if name.lower() in response),
+            None
+        ) 
+               
+        if not selected_pokemon:
             print("Unknown action detected!")
             return
 
-        target = pokemons[selected_attack] if selected_attack != "pokemon1" else self._get_back_button(detections)
+        target = pokemons[selected_pokemon] if selected_pokemon != "pokemon1" else self._get_back_button(detections)
         if target:
             x, y = image_utils.calculate_middle(*target.coordinates)
             pyautogui_utils.perform_click(x, y)
-            if selected_attack != "pokemon1":
+            if selected_pokemon != "pokemon1":
                 time.sleep(0.5)
                 pyautogui_utils.perform_click(x, y)
