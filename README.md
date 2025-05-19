@@ -73,16 +73,16 @@ This project integrates a local Large Language Model (LLM) using [**Ollama**](ht
 
 ### Model Used
 
-We use the [`phi:chat`](https://ollama.com/library/phi) model, which is lightweight and works well on machines **without a GPU**, making it ideal for development on low-spec systems.
+We use the [`mistral`](https://ollama.com/library/mistral) model, which is lightweight and works well on machines **without a GPU**, making it ideal for development on low-spec systems.
 
 ### Running the Model Locally
 
-To run the model locally, first make sure Ollama is installed. Then, pull and run the Phi chat model with:
+To run the model locally, first make sure Ollama is installed. Then, pull and run the Mistral chat model with:
 
 ```sh
-ollama run phi:chat
+ollama run mistral
 ```
 
 ## Notes
-- Ensure you have the necessary permissions to capture the screen. On Linux systems using the Wayland display server, you may need to configure environment variables, such as DISPLAY, to ensure proper functionality.
+- Ensure you have the necessary permissions to capture the screen. On Linux systems, using the Wayland display server is not recommended; for best compatibility, prefer running under Xorg.
 - Adjust parameters and offsets (defined in `app/utils/contants.py`) as needed for your screen and application context.

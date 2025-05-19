@@ -23,7 +23,7 @@ POKEMON_TEXT_Y2_OFFSET = 64  # Offset subtracted from the bottom coordinate
 Constants for OLLAMA
 """ 
 OLLAMA_MODEL_ENDPOINT = "http://localhost:11434/api/generate"  # End point for OLLAMA
-OLLAMA_MODEL = "phi"  # Default model for OLLAMA
+OLLAMA_MODEL = "mistral"  # Default model for OLLAMA
 
 """
 Prompt for LLM
