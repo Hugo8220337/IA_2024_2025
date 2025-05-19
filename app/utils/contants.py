@@ -30,6 +30,7 @@ Prompt for LLM
 """
 POKEMON_BATTLE_PROMPT = (
     "You're in a Pokémon HeartGold battle with four options: Fight, Bag, Pokémon, and Run.\n"
+    "In most situations, choose 'fight_button' unless your current Pokémon has a clear disadvantage.\n"
     "Based on the situation, choose the best action.\n\n"
     "Reply with only one of the following (no explanations):\n"
     "- fight_button – to attack\n"

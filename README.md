@@ -80,7 +80,7 @@ We use the [`mistral`](https://ollama.com/library/mistral) model, which is light
 To run the model locally, first make sure Ollama is installed. Then, pull and run the Mistral chat model with:
 
 ```sh
-ollama run mistral
+ollama run mistral:latest
 ```
 
 ## Notes
