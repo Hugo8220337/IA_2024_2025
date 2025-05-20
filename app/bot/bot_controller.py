@@ -1,3 +1,4 @@
+import threading
 from ultralytics import YOLO
 from bot.handlers.pokemon_selection_handler import PokemonSelectionDetectionHandler
 from bot.action_pipeline import ActionPipeline
@@ -56,14 +57,16 @@ class BotController:
         # Update the GUI with the processed image
         self.gui.update_image(frame_to_show)
         
-        # Save the processed frame to a file
-        frame_utils.save_frame(frame_to_show, self.configs)
-
-        # Process the detections through the action pipeline
-        self.action_pipeline.process(detections, screenshot_cv)
-            
-        # Schedule the next iteration of the loop after the specified delay
-        self.gui.get_root().after(screenshot_delay, self.update_loop)
+        # thread to save the processed frame and process the detections
+        # in the background, so the GUI remains responsive
+        def background_task():
+            # Save the processed frame to a file
+            frame_utils.save_frame(frame_to_show, self.configs)
+            # Process the detections through the action pipeline
+            self.action_pipeline.process(detections, screenshot_cv)
+            # When the thread ends, schedule the next iteration of the loop
+            self.gui.get_root().after(screenshot_delay, self.update_loop)
+        threading.Thread(target=background_task, daemon=True).start()
 
     def load_model(self, file_path):
         """
