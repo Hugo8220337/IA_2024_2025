@@ -43,9 +43,9 @@ POKEMON_BATTLE_PROMPT = (
 
 POKEMON_ATTACK_PROMPT = (
     "You are playing Pokémon and must choose the single best attack out of four options based on type matchups. "
-    "Prefer damaging moves over status moves when possible. "
-    "Select ONLY ONE attack—do not list multiple choices.\n"
+    "Select ONLY ONE attack—do not list multiple choices. NO EXPLANATION\n"
     "Respond strictly with: attack1, attack2, attack3, or attack4. No extra text.\n\n"
+    "If any attack names are misspelled or unclear, try to infer and use the correct names.\n\n"
     "Enemy Pokémon: {enemy_pokemon}\n"
     "Your Pokémon: {my_pokemon}\n"
     "Available attacks: {attacks}\n\n"
@@ -55,7 +55,7 @@ POKEMON_ATTACK_PROMPT = (
 POKEMON_SELECTION_PROMPT = (
     "You're in a Pokémon battle and must switch to the best option from your team.\n"
     "Choose based on type matchups and the current situation.\n"
-    "Respond with only one of the following: {allowed_labels_str}. No explanation.\n"
+    "Respond strictly with ONLY ONE of the following: {allowed_labels_str}. NO EXPLANATION.\n"
     "If any Pokémon names are misspelled or unclear, try to infer and use the correct names.\n\n"
     "Enemy Pokémon: {enemy_pokemon}\n"
     "Current Pokémon: {my_pokemon}\n"

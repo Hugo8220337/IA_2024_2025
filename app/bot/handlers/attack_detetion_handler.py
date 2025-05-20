@@ -36,69 +36,61 @@ class AttackDetectionHandler(ActionHandler, BaseDetectionHandler):
         return positives >= 3 or (has_attack_prefix and has_type_prefix)
 
     def _get_attacks_json(self, detections: List[Detection], image: numpy.ndarray) -> dict:
-        """
-        Extract attack names and types from detections using batch OCR.
-        If the OCR result does not capture a type, searches for a detection whose name
-        starts with "type" within the attack detection's coordinates.
-        Returns:
-        {
-            "attacks": {
-                "attack1": {"name": "", "type": ""},
-                ...
-            }
-        }
-        """
         attacks = {}
-        coords_list = []
-        valid_attack_detections = []
-
+        
+        # get attacks from detections
+        coords = {}
         for detection in detections:
-            if detection.confidence < 0.5 or not detection.name.lower().startswith("attack"):
-                continue
+            if detection.confidence >= 0.5 and detection.name.lower().startswith("attack"):
+                x1 = int(detection.coordinates[0]) + ATTACK_TEXT_X1_OFFSET
+                y1 = int(detection.coordinates[1]) + ATTACK_TEXT_Y1_OFFSET
+                x2 = int(detection.coordinates[2]) - ATTACK_TEXT_X2_OFFSET
+                y2 = int(detection.coordinates[3]) - ATTACK_TEXT_Y2_OFFSET
+                coords[detection.name] = [x1, y1, x2, y2]
+                attacks[detection.name] = {"name": detection.name, "type": ""}
+        
+        # get types from detections
+        for detection in detections:
+            if detection.confidence >= 0.5 and detection.name.lower().startswith("type"):
+                for attack_name, attack_coords in coords.items():
+                    if image_utils.is_inside(detection.coordinates, attack_coords):
+                        attacks[attack_name]["type"] = detection.name
+                        break
 
-            x1 = int(detection.coordinates[0]) + ATTACK_TEXT_X1_OFFSET
-            y1 = int(detection.coordinates[1]) + ATTACK_TEXT_Y1_OFFSET
-            x2 = int(detection.coordinates[2]) - ATTACK_TEXT_X2_OFFSET
-            y2 = int(detection.coordinates[3]) - ATTACK_TEXT_Y2_OFFSET
+        # get attacks from OCR
+        coords_list = []
+        for attack_name, attack_coords in coords.items():
+            x1, y1, x2, y2 = attack_coords
             coords_list.append([x1, y1, x2, y2])
-            valid_attack_detections.append(detection)
 
-        if not coords_list:
-            return {"attacks": {}}
-
-        # Create a list of images (same image repeated for each region) and perform batch OCR.
         images_list = [image] * len(coords_list)
         texts = ocr_utils.read_texts_in_squares(images_list, coords_list)
-
-        attack_num = 1
-        for detection, text in zip(valid_attack_detections, texts):
-            if text:
-                lines = [line.strip() for line in text.splitlines() if line.strip()]
-                if lines:
-                    if len(lines) >= 2:
-                        name = " ".join(lines[:-1])
-                        atype = lines[-1]
-                    else:
-                        name = lines[0]
-                        atype = ""
-                else:
-                    name, atype = "", ""
+        for idx, (attack_name, text) in enumerate(zip(coords.keys(), texts), 1):
+            # Remove extraneous spaces and empty lines.
+            lines = [line.strip() for line in text.splitlines() if line.strip()] if text else []
+            
+            # Assume multiple lines: all but the last are the name, last is the type.
+            if len(lines) >= 2:
+                name = " ".join(lines[:-1])
+                atype = lines[-1]
+            elif len(lines) == 1:
+                name = lines[0]
+                atype = ""
             else:
                 name, atype = "", ""
 
-            # If OCR did not detect a type, try to find a secondary detection with a "type" prefix.
+            # If type wasn't detected by OCR, try to find a detection with prefix "type"
             if not atype:
                 for other in detections:
-                    if other.name.lower().startswith("type"):
-                        if image_utils.is_inside(other.coordinates, detection.coordinates):
-                            atype = other.name.lower().replace("type", "").strip("_ ")
-                            break
+                    if other.name.lower().startswith("type") and image_utils.is_inside(other.coordinates, coords[attack_name]):
+                        atype = other.name.lower().replace("type", "").strip("_ ")
+                        break
 
-            attacks[f"attack{attack_num}"] = {"name": name, "type": atype}
-            attack_num += 1
-
+            attacks[attack_name]["name"] = name
+            attacks[attack_name]["type"] = atype
         return {"attacks": attacks}
-    
+        
+ 
     def handle(self, detections: List[Detection], image) -> None:
         if not self._is_attacking(detections):
             return
