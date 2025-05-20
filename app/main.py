@@ -1,4 +1,5 @@
 import tkinter as tk
+from utils.ocr_utils import OCRReaderSingleton
 from utils.config import Config
 from utils.contants import CONFIG_INSTANCE
 from gui.app_gui import AppGUI
@@ -7,6 +8,7 @@ from gui.menu_bar import MenuBar
 
 def main():
     root = tk.Tk()
+
     configs = Config.get_instance(CONFIG_INSTANCE)
     
     bot_controller = BotController(
@@ -24,6 +26,9 @@ def main():
 
     # Configure the menu bar
     root.config(menu=menu_bar.menu)
+
+    # Load the OCR reader instance on startup, to avoid delays in the first use
+    OCRReaderSingleton.get_instance()  
 
     # Configure the main window
     root.mainloop()
