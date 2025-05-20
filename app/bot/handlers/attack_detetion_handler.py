@@ -34,61 +34,47 @@ class AttackDetectionHandler(ActionHandler, BaseDetectionHandler):
         )
         
         return positives >= 3 or (has_attack_prefix and has_type_prefix)
-
+    
     def _get_attacks_json(self, detections: List[Detection], image: numpy.ndarray) -> dict:
         attacks = {}
-        
-        # get attacks from detections
-        coords = {}
-        for detection in detections:
-            if detection.confidence >= 0.5 and detection.name.lower().startswith("attack"):
-                x1 = int(detection.coordinates[0]) + ATTACK_TEXT_X1_OFFSET
-                y1 = int(detection.coordinates[1]) + ATTACK_TEXT_Y1_OFFSET
-                x2 = int(detection.coordinates[2]) - ATTACK_TEXT_X2_OFFSET
-                y2 = int(detection.coordinates[3]) - ATTACK_TEXT_Y2_OFFSET
-                coords[detection.name] = [x1, y1, x2, y2]
-                attacks[detection.name] = {"name": detection.name, "type": ""}
-        
-        # get types from detections
-        for detection in detections:
-            if detection.confidence >= 0.5 and detection.name.lower().startswith("type"):
-                for attack_name, attack_coords in coords.items():
-                    if image_utils.is_inside(detection.coordinates, attack_coords):
-                        attacks[attack_name]["type"] = detection.name
+        attack_boxes = {}
+
+        # Collect original attack boxes (no offset)
+        for det in detections:
+            if det.confidence >= 0.5 and det.name.lower().startswith("attack"):
+                attacks[det.name] = {"name": det.name, "type": ""}
+                attack_boxes[det.name] = det.coordinates
+
+        # Assign types to attacks based on spatial inclusion
+        for det in detections:
+            if det.confidence >= 0.5 and det.name.lower().startswith("type"):
+                for attack_name, box in attack_boxes.items():
+                    if image_utils.is_inside(det.coordinates, box):
+                        attacks[attack_name]["type"] = det.name
                         break
 
-        # get attacks from OCR
-        coords_list = []
-        for attack_name, attack_coords in coords.items():
-            x1, y1, x2, y2 = attack_coords
-            coords_list.append([x1, y1, x2, y2])
+        # Adjust boxes for better OCR reading
+        coords_list = [
+            [
+                int(box[0]) + ATTACK_TEXT_X1_OFFSET,
+                int(box[1]) + ATTACK_TEXT_Y1_OFFSET,
+                int(box[2]) - ATTACK_TEXT_X2_OFFSET,
+                int(box[3]) - ATTACK_TEXT_Y2_OFFSET,
+            ]
+            for box in attack_boxes.values()
+        ]
 
-        images_list = [image] * len(coords_list)
-        texts = ocr_utils.read_texts_in_squares(images_list, coords_list)
-        for idx, (attack_name, text) in enumerate(zip(coords.keys(), texts), 1):
-            # Remove extraneous spaces and empty lines.
+        # Read texts via OCR
+        texts = ocr_utils.read_texts_in_squares([image] * len(coords_list), coords_list)
+
+        # Update attack names from OCR text
+        for attack_name, text in zip(attack_boxes.keys(), texts):
             lines = [line.strip() for line in text.splitlines() if line.strip()] if text else []
-            
-            # Assume multiple lines: all but the last are the name, last is the type.
-            if len(lines) >= 2:
-                name = " ".join(lines[:-1])
-                atype = lines[-1]
-            elif len(lines) == 1:
-                name = lines[0]
-                atype = ""
-            else:
-                name, atype = "", ""
+            if lines:
+                attacks[attack_name]["name"] = " ".join(lines)
 
-            # If type wasn't detected by OCR, try to find a detection with prefix "type"
-            if not atype:
-                for other in detections:
-                    if other.name.lower().startswith("type") and image_utils.is_inside(other.coordinates, coords[attack_name]):
-                        atype = other.name.lower().replace("type", "").strip("_ ")
-                        break
-
-            attacks[attack_name]["name"] = name
-            attacks[attack_name]["type"] = atype
         return {"attacks": attacks}
+
         
  
     def handle(self, detections: List[Detection], image) -> None:
@@ -102,6 +88,7 @@ class AttackDetectionHandler(ActionHandler, BaseDetectionHandler):
 
         attacks_json = self._get_attacks_json(detections, image)
 
+        # Convert the attacks JSON to a string format for the prompt
         prompt = POKEMON_ATTACK_PROMPT.format(
             enemy_pokemon=enemy_name,
             my_pokemon=my_name,
@@ -109,16 +96,21 @@ class AttackDetectionHandler(ActionHandler, BaseDetectionHandler):
         )
         response = call_ollama(prompt=prompt).lower()
 
-        # Verify if the response contains any of the buttons
-        selected_attack = next((label for label in attacks_json["attacks"] if label in response), None)
-        
-        if selected_attack:
-            attack_button = next((attack for attack in detections if attack.name.lower() == selected_attack), None)
+        def click_attack(attack_label: str) -> bool:
+            attack_button = next((a for a in detections if a.name.lower() == attack_label), None)
             if attack_button:
                 x_min, y_min, x_max, y_max = attack_button.coordinates
                 x, y = image_utils.calculate_middle(x_min, y_min, x_max, y_max)
                 pyautogui_utils.perform_click(x, y)
-            else:
-                print("Coordinates not found for selected attack!")
-        else:
-            print("Unknown action detected!")        
+                return True
+            return False
+
+        # Try to click the detected attack in the response
+        selected_attack = next((label for label in attacks_json["attacks"] if label in response), None)
+
+        if selected_attack and click_attack(selected_attack):
+            return
+        
+        # Fallback: click "attack1" by default
+        if not click_attack("attack1"):
+            print("No valid attack button found to click.")

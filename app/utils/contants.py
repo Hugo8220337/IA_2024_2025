@@ -37,19 +37,17 @@ POKEMON_BATTLE_PROMPT = (
     "Some info may be vague—use your best judgment.\n\n"
     "Situation:\n"
     "Enemy Pokémon: {enemy_pokemon}\n"
-    "Your active Pokémon: {my_pokemon}\n\n"
-    "Action:"
+    "Your active Pokémon: {my_pokemon}"
 )
 
 POKEMON_ATTACK_PROMPT = (
     "You are playing Pokémon and must choose the single best attack out of four options based on type matchups. "
-    "Select ONLY ONE attack—do not list multiple choices. NO EXPLANATION\n"
-    "Respond strictly with: attack1, attack2, attack3, or attack4. No extra text.\n\n"
+    "Select ONLY ONE attack not list multiple choices. NO EXPLANATION, JUST ONE WORD\n"
     "If any attack names are misspelled or unclear, try to infer and use the correct names.\n\n"
+    "Respond strictly with: attack1, attack2, attack3, or attack4. No extra text.\n\n"
     "Enemy Pokémon: {enemy_pokemon}\n"
     "Your Pokémon: {my_pokemon}\n"
-    "Available attacks: {attacks}\n\n"
-    "Answer:"
+    "Available attacks: {attacks}"
 )
 
 POKEMON_SELECTION_PROMPT = (
@@ -59,6 +57,5 @@ POKEMON_SELECTION_PROMPT = (
     "If any Pokémon names are misspelled or unclear, try to infer and use the correct names.\n\n"
     "Enemy Pokémon: {enemy_pokemon}\n"
     "Current Pokémon: {my_pokemon}\n"
-    "Available Team: {pokemons}\n\n"
-    "Answer:"
+    "Available Team: {pokemons}"
 )
