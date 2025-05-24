@@ -1,0 +1,114 @@
+\documentclass[12pt,a4paper,titlepage]{article}
+\usepackage[utf8]{inputenc} % para poder colocar acentos e caracteres especiais
+\usepackage[portuguese]{babel}
+\usepackage{graphicx} % Permite inserir e manipular imagens
+\usepackage{fancyhdr} % 
+\usepackage{caption}
+\usepackage{geometry} % Permite definir facilmente margens e o layout da página
+\usepackage{setspace} % Permite alterar o espaçamento entre linhas
+\usepackage{titlesec} % Permite personalizar os títulos de secções e subseções
+\usepackage[hidelinks]{hyperref} % Ativa links clicáveis no PDF
+\usepackage{multicol} % coloca isto no preâmbulo
+
+% Page setup
+\geometry{margin=2.5cm}
+\setstretch{1.5}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\thepage}
+\lhead{Escola Superior de Tecnologia e Gestão}
+
+% Title formatting
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+
+\begin{document}
+
+% Title Page
+\begin{titlepage}
+    \centering
+    \includegraphics[width=15cm]{imagens/estg_logo.png}\par\vspace{0.9cm} % 
+    \scshape % Small caps for the institution name
+    
+    \rule{\textwidth}{1pt}\vspace{0.4cm} % Horizontal line
+    {\Huge \bfseries Inteligência Artificial \par}
+    {Trabalho Prático - Avaliação Contínua \par}
+    \vspace{0.4cm}\rule{\textwidth}{1pt}\par
+    \vspace{2cm}
+    
+    \Large Licenciatura em Engenharia Informática \par
+    \vspace{4cm}
+
+    \normalsize
+    \textbf{Grupo 22} \par
+    César Castelo – 8220169 \par
+    Hugo Guimarães – 8220337 \par
+    Pedro Pinho – 8220307 \par
+    \vfill
+
+    \large \today
+\end{titlepage}
+
+
+% Indice
+\tableofcontents
+\newpage
+
+% Lista de Figuras
+\renewcommand{\listfigurename}{Índice de Figuras}
+\listoffigures
+\addcontentsline{toc}{section}{Índice de Figuras}
+\newpage
+
+% Lista de Tabelas
+%\renewcommand{\listtablename}{Índice de Tabelas}
+%\listoftables
+%\addcontentsline{toc}{section}{Índice de Tabelas}
+%\newpage
+
+
+
+% Introdução
+\include{seccoes/introducao}
+
+\newpage
+
+% Definição do Problema
+\include{seccoes/definicao_do_problema}
+
+% Recolha de Imagens
+\include{seccoes/recolha_de_imagens}
+
+% Methodology / Work Done
+\include{seccoes/etiquetagem}
+
+
+% Treino do Modelo
+\include{seccoes/treino_do_modelo}
+
+% Data Augmentation
+\include{seccoes/data_augmentation}
+
+% Avaliação do Modelo
+\include{seccoes/avaliacao_do_modelo}
+
+% Implementação em Produção
+\include{seccoes/implementacao_em_producao}
+
+% Conclusion
+\section{Conclusão} \label{conclusao}
+Olhando em retrospetiva, consideramos que o trabalho realizado foi bem concebido, tendo sido possível cumprir com os objetivos propostos, além de acrescentar funcionalidades que inicialmente não estavam previstas. Este projeto permitiu-nos aprofundar conhecimentos em áreas como visão computacional, integração de modelos de inteligência artificial e automação de tarefas baseadas em deteção e interpretação visual.
+
+
+Mesmo com um trabalho bem concebido, temos a consciência que ainda poderia melhorar em diversos aspetos, como por exemplo: 
+
+A leitura do ecrã a partir do \textit{easyOCR} para além de ser bastante lenta, atrasando as ações do bot, é bastante ineficiente, lendo as palavras com bastantes erros, e em alguns casos nem sequer as consegue ler. Futuramente poderia ser treinado um modelo exclusivamente para fazer leituras, onde o treino do mesmo seria realizado tendo como base textos com a fonte original do jogo, reduzindo a quantidade de erros, e muito provavelmente reduzindo o tempo de espera pela leitura.
+
+A implementação do modelo de linguagem \textit{mistral} surgiu como alternativa para contornar a ineficiência do \textit{easyOCR} na leitura do ecrã. Embora o modelo consiga interpretar os resultados, mesmo com erros, e responder com alguma coerência, ele partilha das mesmas limitações de desempenho do \textit{easyOCR}. Além de ser bastante lento, muitas vezes não cumpre corretamente o prompt fornecido, gerando respostas excessivamente longas, o que atrasa o processo e exige múltiplas execuções devido à dificuldade em interpretar a resposta anterior. Para tentar reduzir o tempo das respostas foi implementada uma cache onde é guardado o promp respetivamente com a resposta dada pelo modelo, mas mesmo assim é preciso esperar no mínimo uma vez pela resposta do modelo. 
+
+Como a versão do \textit{mistral} utilizada está otimizada para computadores mais limitados, a mesma apresenta várias lacunas no conhecimento, tomando muitas vezes decisões pouco coesas com o contexto da batalha.
+
+Em suma, este projeto permitiu-nos consolidar conhecimentos teóricos e práticos, ao mesmo tempo que revelou oportunidades claras de melhoria, quer ao nível da performance técnica, quer na escolha das ferramentas utilizadas. Os próximos passos devem focar-se na melhoria da robustez e da adaptabilidade do sistema, de modo a alcançar um desempenho ainda mais fiável em cenários reais.
+
+
+\end{document}

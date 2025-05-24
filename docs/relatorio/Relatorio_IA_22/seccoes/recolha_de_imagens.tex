@@ -1,0 +1,28 @@
+\section{Recolha de Imagens} \label{recolha_imagens}
+\subsection{Estratégias de Recolha}
+Para garantir a qualidade e diversidade do conjunto dos dados utilizados no treino dos modelos, foi delineada uma estratégia de recolha de imagens com base em sessões de jogo no Pokémon HeartGold. A recolha foi focada exclusivamente nas batalhas ocorridas entre New Bark Town e Violet City, abrangendo somente os Pokémons selvagens encontrados nas zonas descritas na Secção \ref{restricoes_impostas}.
+
+As imagens foram capturadas manualmente durante as batalhas, utilizando a ferramenta de captura de ecrã. Esta abordagem permitiu obter imagens diretamente extraídas do ambiente de jogo, com as condições visuais que o modelo encontrará em produção.
+
+Durante o processo, foram tidas em conta as seguintes preocupações:
+
+\begin{itemize} 
+    \item \textbf{Diversidade dos Pokémons:} Procurou-se capturar um número equilibrado de imagens por espécie de Pokémon, de forma a evitar enviesamentos no treino.
+    
+    \item \textbf{Variações visuais:} Foram recolhidas imagens com diferentes níveis de brilho, tamanhos ligeiramente distintos e interfaces do jogo visíveis, de modo a treinar um modelo mais condizente com o que vai encontrar em produção.
+
+    \item \textbf{Contexto real de uso:} As capturas foram feitas com o layout e resoluções utilizadas na aplicação real, garantindo que o modelo terá desempenho semelhante na fase de produção.
+\end{itemize}
+
+\subsection{Problemas Enfrentados}
+Durante a fase de recolha de imagens, surgiram alguns desafios que impactaram o processo e exigiram ajustes na estratégia inicialmente definida. Os principais problemas enfrentados foram os seguintes:
+
+\begin{itemize} 
+    \item \textbf{Frequência aleatória dos encontros:} Como os encontros com Pokémon selvagens no Pokémon HeartGold ocorrem de forma aleatória, foi necessário realizar várias sessões de jogo até conseguir reunir uma quantidade equilibrada de imagens para cada espécie. Algumas espécies surgem em horários específicos do dia, o que dificultou a uniformidade da recolha.
+
+    \item \textbf{Restrições técnicas de captura:} A utilização de capturas manuais tornou o processo moroso e sujeito a erro humano, como capturas fora de tempo ou com movimentos de transição que desfocavam parcialmente o alvo. Foram necessárias múltiplas tentativas para garantir imagens claras e com boa composição.
+
+    \item \textbf{Problemas de repetição:} Em algumas sessões, surgiram muitas imagens semelhantes (mesmo Pokémon, mesma posição), o que podia levar a um conjunto de dados redundante. Para contornar isso, foi feito um esforço adicional para variar o momento da captura dentro da batalha.
+\end{itemize}
+
+Apesar destas dificuldades, foi possível reunir um conjunto de dados representativo e diversificado, suficiente para treinar e avaliar os modelos propostos com uma boa margem de confiança.
