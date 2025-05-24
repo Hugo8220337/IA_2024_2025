@@ -209,3 +209,7 @@ pip-selfcheck.json
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/python,visualstudiocode,venv
+
+# Ollama cache
+# Ollama cache directory, used for storing model weights and other data.
+/ollama_cache

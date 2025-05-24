@@ -22,22 +22,6 @@ class PokemonSelectionDetectionHandler(ActionHandler, BaseDetectionHandler):
         )
         return positives >= 1
     
-    def _get_pokemon_text(self, detection: Detection, image: numpy.ndarray) -> str:
-        """
-        Get the pokemon text from the detection.
-        Returns the text if it starts with "pokemon", otherwise returns None.
-        """
-        if not detection.name.lower().startswith("pokemon"):
-            return ""
-
-        x1 = int(detection.coordinates[0]) + POKEMON_TEXT_X1_OFFSET
-        y1 = int(detection.coordinates[1]) + POKEMON_TEXT_Y1_OFFSET
-        x2 = int(detection.coordinates[2]) - POKEMON_TEXT_X2_OFFSET
-        y2 = int(detection.coordinates[3]) - POKEMON_TEXT_Y2_OFFSET
-
-        # Assuming OCR function is defined elsewhere
-        return ocr_utils.read_text_in_square(image, [x1, y1, x2, y2])
-    
     def _get_pokemons_json(self, detections: List[Detection], image: numpy.ndarray) -> dict:
         """
         Returns a JSON with the pokemons detected in the selection screen.
@@ -50,14 +34,29 @@ class PokemonSelectionDetectionHandler(ActionHandler, BaseDetectionHandler):
             }
         }
         """
-        pokemons = {}
+        coords_list = []
+        labels = []
         count = 1
+
         for detection in detections:
             if detection.name.lower().startswith("pokemon") and count <= 6:
-                pokemon_name = self._get_pokemon_text(detection, image)
-                if pokemon_name:
-                    pokemons[f"pokemon{count}"] = pokemon_name
-                    count += 1
+                x1 = int(detection.coordinates[0]) + POKEMON_TEXT_X1_OFFSET
+                y1 = int(detection.coordinates[1]) + POKEMON_TEXT_Y1_OFFSET
+                x2 = int(detection.coordinates[2]) - POKEMON_TEXT_X2_OFFSET
+                y2 = int(detection.coordinates[3]) - POKEMON_TEXT_Y2_OFFSET
+                coords_list.append([x1, y1, x2, y2])
+                labels.append(f"pokemon{count}")
+                count += 1
+
+        # Create a list of images, one for each region
+        images_list = [image] * len(coords_list)
+        texts = ocr_utils.read_texts_in_squares(images_list, coords_list)
+
+        pokemons = {}
+        for label, text in zip(labels, texts):
+            if text:
+                pokemons[label] = text
+
         return {"pokemons": pokemons}
     
     def _get_pokemon_labels(self, detections: List[Detection], image: numpy.ndarray) -> Dict[str, Detection]:

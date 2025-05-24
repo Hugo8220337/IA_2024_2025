@@ -1,0 +1,38 @@
+\section{Definição do Problema} \label{definicao_problema}
+\subsection{Jogo Selecionado}
+Inicialmente, foi considerada a criação de um modelo para o jogo Castlevania, da consola NES (Nintendo Entertainment System). No entanto, após conversar com o professor da disciplina, concluiu-se que esta não seria a escolha mais apropriada. O primeiro Castlevania é um jogo do género plataforma e conhecido por ser bastante difícil, o que tornaria complexo calcular as distâncias e a duração necessária de cada input. Para obter um desempenho minimamente funcional, seria necessário efetuar, no mínimo, uma captura de ecrã por segundo, o que exigiria uma capacidade de processamento considerável, algo que poderia exceder os recursos computacionais disponíveis ao grupo. Face a estas limitações, optou-se por desenvolver um bot para batalhas do jogo Pokémon Fire Red, dada a natureza mais estática dos combates. Esta abordagem permitiria reduzir significativamente a exigência de processamento em tempo real e facilitaria a recolha de imagens para o treino do modelo.
+
+Inicialmente, considerou-se utilizar o cliente PokeMMO, uma plataforma não oficial baseada nos jogos da série Pokémon, que permite a interação de múltiplos jogadores em simultâneo. No entanto, durante o desenvolvimento surgiram dificuldades técnicas relacionadas com o PokeMMO: o ecrã de batalha apresentava-se demasiado pequeno em comparação com o restante ambiente do jogo e sofria alterações frequentes de posição e tamanho, o que dificultava a captura de imagens consistentes para o treino do modelo.
+
+Perante estes problemas, decidiu-se alterar o projeto para o jogo Pokémon HeartGold, da consola Nintendo DS, emulado para facilitar o desenvolvimento. A escolha do HeartGold deveu-se ao facto da Nintendo DS possuir um ecrã sensível ao toque, permitindo interações diretas via rato, e da resolução das batalhas manter-se estável, o que simplifica tanto a recolha de imagens como o treino do modelo de visão computacional.
+
+A utilização da ROM do Pokémon HeartGold é legítima no contexto do projeto, visto que um dos membros do grupo possui uma cópia original do jogo, e a ROM foi extraída diretamente dessa mesma cópia.
+
+\subsection{Tarefas a Automatizar} \label{tarefas_a_automatizar}
+A principal tarefa a automatizar neste projeto é a identificação dos Pokémons adversários durante uma batalha e na escolha das melhores ações com base nessa identificação. Esta abordagem visa simular o comportamento de um jogador humano durante os combates, mas de forma automatizada e em tempo real.
+
+Para atingir esse objetivo, o sistema será composto da seguinte forma:
+
+\begin{itemize} 
+    \item \textbf{Deteção dos Pokémons em combate:} Durante a batalha, o modelo de visão computacional (baseado na arquitetura YOLO) será responsável por identificar qual o Pokémon que o jogador está a utilizar e o Pokémon do adversário presente no ecrã. Este reconhecimento visual será realizado com base nas imagens previamente recolhidas e etiquetadas.
+
+    \item \textbf{Escolha da ação a realizar:} Antes de atacar, o sistema decide automaticamente se a melhor opção é atacar, fugir ou trocar de Pokémon, com base na situação atual da batalha. Esta decisão é tomada através da análise do contexto e das opções disponíveis.
+    
+    \item \textbf{Escolha do ataque:} Caso o bot decida atacar, o sistema irá selecionar o ataque mais eficaz com base nos Pokémons em combate. Esta decisão poderá ser feita utilizando uma lógica condicional simples ou uma base de conhecimento pré-definida.
+
+    \item \textbf{Escolha do Pokémon a trocar:} Quando o sistema decide trocar de Pokémon, também é responsável por escolher automaticamente qual o Pokémon mais adequado para entrar em combate, tendo em conta a composição da equipa e o adversário.
+\end{itemize}
+
+\subsection{Restrições Impostas} \label{restricoes_impostas}
+Tendo em conta que os jogos da série Pokémon são bastante extensos, com diversas zonas e uma grande variedade de Pokémons, foi necessário impor algumas restrições ao âmbito do projeto, de forma a torná-lo mais viável. Assim, optou-se por limitar o jogo à progressão desde a cidade inicial, \textbf{New Bark Town}, até à cidade de \textbf{Violet City}. Desta forma, reduz-se significativamente a complexidade do modelo e o volume de dados necessários para treino.
+
+Além disso, decidiu-se não incluir os Pokémons utilizados contra outros treinadores, seja dentro ou fora de ginásios, focando-se apenas nos encontros aleatórios nas rotas iniciais. Assim, os modelos a desenvolver abrangerão apenas os Pokémons encontrados nas seguintes zonas:
+
+\begin{itemize}
+    \item Rota 29
+    \item Rota 46
+    \item Rota 30
+    \item Rota 31
+\end{itemize}
+
+Estas zonas foram escolhidas por representarem os primeiros desafios do jogo e por permitirem uma recolha de dados mais controlada e consistente, facilitando o desenvolvimento e teste dos modelos.

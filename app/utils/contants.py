@@ -29,36 +29,33 @@ OLLAMA_MODEL = "mistral"  # Default model for OLLAMA
 Prompt for LLM
 """
 POKEMON_BATTLE_PROMPT = (
-    "You're in a Pokémon HeartGold battle with four options: Fight, Bag, Pokémon, and Run.\n"
-    "In most situations, choose 'fight_button' unless your current Pokémon has a clear disadvantage.\n"
-    "Based on the situation, choose the best action.\n\n"
+    "You're in a Pokémon HeartGold battle with these options: Fight, Pokémon, and Run.\n"
     "Reply with only one of the following (no explanations):\n"
-    "- fight_button – to attack\n"
-    "- pokemon_button – to switch Pokémon\n"
-    "- run_button – to flee\n\n"
-    "If names are misspelled or unclear, infer the correct Pokémon.\n"
+    "- fight_button: Default choice.\n"
+    "- pokemon_button: Switch if your Pokémon is weak to enemy's type\n"
+    "- run_button: Only if you can't win\n\n"
     "Some info may be vague—use your best judgment.\n\n"
     "Situation:\n"
     "Enemy Pokémon: {enemy_pokemon}\n"
-    "Your active Pokémon: {my_pokemon}\n\n"
-    "Action:"
+    "Your active Pokémon: {my_pokemon}"
 )
+
 POKEMON_ATTACK_PROMPT = (
-    "You are playing Pokémon and must choose the best of four attacks based on type matchups.\n"
-    "Respond with: attack1, attack2, attack3 or attack4. No explanation. No extra text.\n\n"
+    "You are playing Pokémon and must choose the single best attack out of four options based on type matchups. "
+    "Select ONLY ONE attack not list multiple choices. NO EXPLANATION, JUST ONE WORD\n"
+    "If any attack names are misspelled or unclear, try to infer and use the correct names.\n\n"
+    "Respond strictly with: attack1, attack2, attack3, or attack4. No extra text.\n\n"
     "Enemy Pokémon: {enemy_pokemon}\n"
     "Your Pokémon: {my_pokemon}\n"
-    "Available attacks: {attacks}\n\n"
-    "Answer:"
+    "Available attacks: {attacks}"
 )
 
 POKEMON_SELECTION_PROMPT = (
     "You're in a Pokémon battle and must switch to the best option from your team.\n"
     "Choose based on type matchups and the current situation.\n"
-    "Respond with only one of the following: {allowed_labels_str}. No explanation.\n"
+    "Respond strictly with ONLY ONE of the following: {allowed_labels_str}. NO EXPLANATION.\n"
     "If any Pokémon names are misspelled or unclear, try to infer and use the correct names.\n\n"
     "Enemy Pokémon: {enemy_pokemon}\n"
     "Current Pokémon: {my_pokemon}\n"
-    "Available Team: {pokemons}\n\n"
-    "Answer:"
+    "Available Team: {pokemons}"
 )

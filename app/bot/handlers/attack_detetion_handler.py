@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import List
 
 import numpy
 from utils import image_utils, pyautogui_utils
@@ -35,72 +35,48 @@ class AttackDetectionHandler(ActionHandler, BaseDetectionHandler):
         
         return positives >= 3 or (has_attack_prefix and has_type_prefix)
     
-    def _get_attack_text(self, detection: Detection, image: numpy.ndarray) -> str:
-        """
-        Get the attack text from the detection.
-        Returns the text if it starts with "attack", otherwise returns None.
-        """
-        if not detection.name.lower().startswith("attack"):
-            return ""
-
-        x1 = int(detection.coordinates[0]) + ATTACK_TEXT_X1_OFFSET
-        y1 = int(detection.coordinates[1]) + ATTACK_TEXT_Y1_OFFSET
-        x2 = int(detection.coordinates[2]) - ATTACK_TEXT_X2_OFFSET
-        y2 = int(detection.coordinates[3]) - ATTACK_TEXT_Y2_OFFSET
-
-        return ocr_utils.read_text_in_square(image, [x1, y1, x2, y2])
-
     def _get_attacks_json(self, detections: List[Detection], image: numpy.ndarray) -> dict:
-        """
-        Extract attack names and types from detections using OCR.
-        If the OCR result does not capture a type, searches for a detection whose name starts with "type"
-        within the attack detection's coordinates.
-        Returns:
-        {
-            "attacks": {
-                "attack1": {"name": "", "type": ""},
-                ...
-            }
-        }
-        """
         attacks = {}
-        attack_num = 1
+        attack_boxes = {}
 
-        for detection in detections:
-            if detection.confidence < 0.5 or not detection.name.lower().startswith("attack"):
-                continue
+        # Collect original attack boxes (no offset)
+        for det in detections:
+            if det.confidence >= 0.5 and det.name.lower().startswith("attack"):
+                attacks[det.name] = {"name": det.name, "type": ""}
+                attack_boxes[det.name] = det.coordinates
 
-            attack_text = self._get_attack_text(detection, image)
-            if attack_text:
-                # Split the OCR result by lines; assume the last line may represent the type.
-                lines = [line.strip() for line in attack_text.splitlines() if line.strip()]
-                if lines:
-                    if len(lines) >= 2:
-                        name = " ".join(lines[:-1])
-                        atype = lines[-1]
-                    else:
-                        name = lines[0]
-                        atype = ""
-                else:
-                    name, atype = "", ""
-            else:
-                name, atype = "", ""
+        # Assign types to attacks based on spatial inclusion
+        for det in detections:
+            if det.confidence >= 0.5 and det.name.lower().startswith("type"):
+                for attack_name, box in attack_boxes.items():
+                    if image_utils.is_inside(det.coordinates, box):
+                        attacks[attack_name]["type"] = det.name
+                        break
 
-            # If type is empty from OCR, search among detections for one with a "type" label
-            # that lies within the attack detection's coordinates.
-            if not atype:
-                for other in detections:
-                    if other.name.lower().startswith("type"):
-                        if image_utils.is_inside(other.coordinates, detection.coordinates):
-                            # Extract type from detection name e.g. "type_bug" -> "bug"
-                            atype = other.name.lower().replace("type", "").strip("_ ")
-                            break
+        # Adjust boxes for better OCR reading
+        coords_list = [
+            [
+                int(box[0]) + ATTACK_TEXT_X1_OFFSET,
+                int(box[1]) + ATTACK_TEXT_Y1_OFFSET,
+                int(box[2]) - ATTACK_TEXT_X2_OFFSET,
+                int(box[3]) - ATTACK_TEXT_Y2_OFFSET,
+            ]
+            for box in attack_boxes.values()
+        ]
 
-            attacks[f"attack{attack_num}"] = {"name": name, "type": atype}
-            attack_num += 1
+        # Read texts via OCR
+        texts = ocr_utils.read_texts_in_squares([image] * len(coords_list), coords_list)
+
+        # Update attack names from OCR text
+        for attack_name, text in zip(attack_boxes.keys(), texts):
+            lines = [line.strip() for line in text.splitlines() if line.strip()] if text else []
+            if lines:
+                attacks[attack_name]["name"] = " ".join(lines)
 
         return {"attacks": attacks}
-    
+
+        
+ 
     def handle(self, detections: List[Detection], image) -> None:
         if not self._is_attacking(detections):
             return
@@ -112,6 +88,7 @@ class AttackDetectionHandler(ActionHandler, BaseDetectionHandler):
 
         attacks_json = self._get_attacks_json(detections, image)
 
+        # Convert the attacks JSON to a string format for the prompt
         prompt = POKEMON_ATTACK_PROMPT.format(
             enemy_pokemon=enemy_name,
             my_pokemon=my_name,
@@ -119,16 +96,21 @@ class AttackDetectionHandler(ActionHandler, BaseDetectionHandler):
         )
         response = call_ollama(prompt=prompt).lower()
 
-        # Verify if the response contains any of the buttons
-        selected_attack = next((label for label in attacks_json["attacks"] if label in response), None)
-        
-        if selected_attack:
-            attack_button = next((attack for attack in detections if attack.name.lower() == selected_attack), None)
+        def click_attack(attack_label: str) -> bool:
+            attack_button = next((a for a in detections if a.name.lower() == attack_label), None)
             if attack_button:
                 x_min, y_min, x_max, y_max = attack_button.coordinates
                 x, y = image_utils.calculate_middle(x_min, y_min, x_max, y_max)
                 pyautogui_utils.perform_click(x, y)
-            else:
-                print("Coordinates not found for selected attack!")
-        else:
-            print("Unknown action detected!")        
+                return True
+            return False
+
+        # Try to click the detected attack in the response
+        selected_attack = next((label for label in attacks_json["attacks"] if label in response), None)
+
+        if selected_attack and click_attack(selected_attack):
+            return
+        
+        # Fallback: click "attack1" by default
+        if not click_attack("attack1"):
+            print("No valid attack button found to click.")

@@ -61,9 +61,9 @@ class BaseDetectionHandler:
         if not filtered_detections:
             return None
 
-        # Find the detection with the highest x-coordinate that has a confidence > 0.7
+        # Find the detection with the highest x-coordinate that has a confidence > 0.6
         highest_x_detection = max(
-            (d for d in filtered_detections if d.confidence > 0.7),
+            (d for d in filtered_detections if d.confidence > 0.6),
             key=lambda d: d.coordinates[0]
         )
 
@@ -85,10 +85,12 @@ class BaseDetectionHandler:
         if not filtered_detections:
             return None
 
-        # Find the detection with the lowest x-coordinate that has a confidence > 0.7
-        lowest_x_detection = min(
-            (d for d in filtered_detections if d.confidence > 0.7),
-            key=lambda d: d.coordinates[0]
-        )
-
-        return lowest_x_detection.name
+        # Find the detection with the lowest x-coordinate that has a confidence > 0.6
+        try:
+            lowest_x_detection = min(
+                (d for d in filtered_detections if d.confidence > 0.6),
+                key=lambda d: d.coordinates[0]
+            )
+            return lowest_x_detection.name
+        except ValueError:
+            return ""

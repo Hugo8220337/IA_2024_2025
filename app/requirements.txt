@@ -4,3 +4,4 @@ ultralytics
 pyautogui
 easyocr
 requests
+diskcache

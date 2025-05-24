@@ -17,48 +17,52 @@ class OCRReaderSingleton:
             cls._instance = easyocr.Reader(['en'], gpu=True)
         return cls._instance
     
-def read_text_in_square(
-    image: np.ndarray,
-    coords: list[int],
-    languages: list[str] = ['en'],
-    enable_gpu: bool = True
-) -> str:
+def read_texts_in_squares(
+    images: list[np.ndarray],
+    coords_list: list[list[int]],
+    batch_size: int = 8,
+) -> list[str]:
     """
-    Reads the text present inside a square in an image.
+    Reads the text present inside squares in multiple images.
 
     Parameters:
-    image (numpy.array): Image loaded with cv2.
-    coords (list[int]): Coordinates of the square in the format [x1, y1, x2, y2].
-    languages (list[str]): List of languages for OCR.
+    images (list[numpy.array]): List of images loaded with cv2.
+    coords_list (list[list[int]]): List of coordinates for each image in the format [x1, y1, x2, y2].
+    batch_size (int): Batch size for OCR.
     enable_gpu (bool): Whether to enable GPU for OCR.
 
     Returns:
-    str: Text read within the region.
+    list[str]: List of texts read within each region.
     """
-    x1, y1, x2, y2 = coords
-
-    # Ensures the coordinates are within the image bounds
-    height, width = image.shape[:2]
-    x1 = max(0, min(x1, width))
-    x2 = max(0, min(x2, width))
-    y1 = max(0, min(y1, height))
-    y2 = max(0, min(y2, height))
-
-    # Extracting the region of interest (ROI) from the image
-    roi = image[y1:y2, x1:x2]
-
-    # If the ROI is empty, return an empty string
-    if roi.size == 0:
-        return ""
-    
-    # gets the OCR reader instance
     reader = OCRReaderSingleton.get_instance()
-    
-    # Reads the text in the ROI without additional details (only the text)
-    results = reader.readtext(roi, detail=0)
-    
-    # Joins all the read texts into a single string
-    text = ' '.join(results)
-    
-    return text
+    texts = []
+
+    for image, coords in zip(images, coords_list):
+        x1, y1, x2, y2 = coords
+        height, width = image.shape[:2]
+
+        # Ensure coordinates are within the image bounds
+        x1 = max(0, min(x1, width))
+        x2 = max(0, min(x2, width))
+        y1 = max(0, min(y1, height))
+        y2 = max(0, min(y2, height))
+
+        roi = image[y1:y2, x1:x2] # Region of interest
+
+        # Check if the region of interest is empty
+        if roi.size == 0:
+            texts.append("")
+            continue
+
+        # Check if the region of interest is too small
+        results = reader.readtext(
+            roi, detail=0,
+            batch_size=batch_size,
+        )
+
+        # If no text is detected, append an empty string
+        text = ' '.join(results)
+        texts.append(text)
+
+    return texts
 
