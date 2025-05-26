@@ -1,0 +1,46 @@
+\section{Etiquetagem} \label{etiquetagem}
+\subsection{Ferramenta Utilizada}
+Para a tarefa de anotação das imagens recolhidas foi utilizada a plataforma \textbf{Roboflow}, que é uma ferramenta online bastante utilizada em projetos de visão computacional. O Roboflow permite criar datasets para tarefas de deteção de objetos, segmentação e classificação de imagem, e possui integração direta com notebooks Python, o que facilita o processo de treino dos modelos.
+
+A plataforma oferece ainda funcionalidades automáticas de data augmentation, divisão de conjuntos (treino, teste e validação), e exportação nos formatos compatíveis com YOLOv8, o que foi essencial para garantir uma integração fácil com o processo de treino realizado posteriormente.
+
+\subsection{Classes Definidas}
+As classes definidas correspondem aos Pokémons encontrados, os tipos dos ataques, e os botões de batalha. A lista final das classes anotadas foi:
+
+\begin{multicols}{3} \begin{itemize} 
+\item bag\_button	
+\item pokemon\_button	
+\item fight\_button	
+\item run\_button	
+\item bellsprout	
+\item caterpie	
+\item geodude	
+\item metapod	
+\item pidgey	
+\item ratata	
+\item sentret	
+\item spearow
+\item hoothoot
+\item type\_fire	
+\item type\_flying	
+\item type\_grass	
+\item type\_ground	
+\item type\_normal
+\item type\_water
+\item attack1
+\item attack2
+\item attack3
+\item attack4
+\item pokemon1
+\item pokemon2
+\item pokemon3
+\item pokemon4
+\item pokemon5
+\item pokemon6
+\item back\_button
+\item cancel\_button
+\item my\_level
+\item enemy\_level
+\end{itemize} \end{multicols}
+
+Estas classes foram escolhidas com base na sua frequência e relevância inicial para o treino do modelo. Embora muitas outras classes tenham sido incluídas no processo de anotação e sejam corretamente detetadas pelo modelo, nem todas são utilizadas na fase de produção. Esta decisão prende-se com questões relacionadas com os objetivos e as necessidades do sistema em funcionamento, e não com limitações na capacidade de deteção do modelo. Novas classes poderão ser facilmente integradas caso o projeto seja estendido no futuro.
