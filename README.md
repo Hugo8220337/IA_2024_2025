@@ -1,4 +1,22 @@
-# IA_2024_2025
+<h1 align="center">Inteligência artificial (Artificial Intelligence)</h1>
+
+<p>
+  <img src="http://img.shields.io/static/v1?style=for-the-badge&label=School%20year&message=2024/2025&color=sucess"/>
+  <img src="http://img.shields.io/static/v1?style=for-the-badge&label=Discipline&message=IA&color=sucess"/>
+  <img src="http://img.shields.io/static/v1?style=for-the-badge&label=Grade&message=20&color=sucess"/>
+</p>
+
+---
+
+<h2>Languages</h2>
+
+
+<p align="left">
+  <img src="https://img.shields.io/static/v1?style=for-the-badge&amp;message=Python&amp;color=3776AB&amp;logo=Python&amp;logoColor=FFFFFF&amp;label=" alt="Python">
+</p>
+
+---
+
 This repository contains scripts and applications for training and inference using YOLO models, as well as a bot with a graphical interface for automation and real-time interaction.
 
 ## Contents
